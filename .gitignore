@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+db.sqlite3
+
+# Django media & static files
+staticfiles/
+media/
+
+# Environments
+.env
+.venv
+venv/
+env/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# User specific reference files
+C:/Users/krish/Desktop/Recallify_Statement_of_Work.docx
+333.png

@@ -1,0 +1,52 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Edit Reminder - Recallify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="h2 mb-0">Edit Reminder</h1>
+        </div>
+        
+        <div class="custom-card">
+            <h5 class="mb-4 text-muted"><i class="bi bi-pencil-square me-2"></i>Modify Reminder Details</h5>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_title" class="form-label fw-bold">Event Name</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label fw-bold">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_scheduled_time" class="form-label fw-bold">Date & Time</label>
+                    {{ form.scheduled_time }}
+                    {% if form.scheduled_time.errors %}
+                        <div class="text-danger small mt-1">{{ form.scheduled_time.errors }}</div>
+                    {% endif %}
+                    <div class="form-text text-muted">Original: {{ reminder.scheduled_time }}</div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="bi bi-save me-2"></i>Save Changes
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Email Simulator - Recallify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="h2 mb-0">Email Simulator</h1>
+        </div>
+        
+        <div class="custom-card mb-4">
+            <div class="d-flex align-items-center gap-3 mb-3 text-success">
+                <i class="bi bi-info-circle-fill" style="font-size: 1.5rem;"></i>
+                <h5 class="fw-bold mb-0">How it works</h5>
+            </div>
+            <p class="text-muted mb-0">
+                Type an email from your registered address to <strong>create@recallify.com</strong>.
+                Our backend NLP parser will automatically scan the Subject and Body to extract the Event Name, Date, and Time.
+            </p>
+        </div>
+
+        <div class="custom-card">
+            <h4 class="mb-4 font-heading fw-bold"><i class="bi bi-envelope me-2 text-primary"></i>Simulate Email Inbox</h4>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">From</label>
+                    <input type="text" class="form-control" value="{{ request.user.email|default:'user@example.com' }}" readonly>
+                    <div class="form-text text-muted">Simulating registered email sender</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">To</label>
+                    <input type="text" class="form-control" value="create@recallify.com" readonly style="background-color: #f8fafc;">
+                    <div class="form-text text-muted">Recallify automated incoming parser address</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Subject</label>
+                    <input type="text" name="subject" class="form-control" placeholder="e.g., Doctor's Appointment" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Body</label>
+                    <textarea name="body" class="form-control" rows="5" placeholder="e.g., tomorrow at 2:00 PM
+Or you can write a descriptive text like:
+'Hey, scheduling our project deadline next Friday at 10 AM. Make sure you complete the drafts!'" required></textarea>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary-custom px-4">
+                        <i class="bi bi-send me-2"></i>Send Email
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Parser examples -->
+        <div class="custom-card mt-4 bg-light border-0">
+            <h5 class="fw-bold font-heading mb-3"><i class="bi bi-lightbulb me-2 text-warning"></i>Try These Examples:</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded">
+                        <div class="fw-bold text-success">Subject: Dentist Appointment</div>
+                        <div class="text-muted small">Body: tomorrow at 10:00 AM</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded">
+                        <div class="fw-bold text-success">Subject: Project Deadline</div>
+                        <div class="text-muted small">Body: next Friday</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded">
+                        <div class="fw-bold text-success">Subject: Birthday Party</div>
+                        <div class="text-muted small">Body: later today at 7:00 PM</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 bg-white border rounded">
+                        <div class="fw-bold text-success">Subject: Team Meeting</div>
+                        <div class="text-muted small">Body: next Monday at 10:00 AM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

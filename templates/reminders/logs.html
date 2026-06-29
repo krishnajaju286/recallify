@@ -1,0 +1,73 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Reminder History & Logs - Recallify{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Reminder History Column -->
+    <div class="col-lg-6 mb-4">
+        <h3 class="fw-bold font-heading mb-4"><i class="bi bi-calendar-check text-success me-2"></i>Reminder History</h3>
+        
+        <div class="custom-card">
+            {% if history_reminders %}
+                <div class="list-group list-group-flush">
+                    {% for reminder in history_reminders %}
+                        <div class="list-group-item px-0 py-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-1">{{ reminder.title }}</h6>
+                                <span class="badge {% if reminder.status == 'sent' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} rounded-pill px-2.5 py-1 text-capitalize">
+                                    {{ reminder.status }}
+                                </span>
+                            </div>
+                            <div class="text-muted small mt-1">
+                                <i class="bi bi-clock-history me-1"></i> Scheduled: {{ reminder.scheduled_time|date:"Y-m-d H:i" }} | Source: {{ reminder.source }}
+                            </div>
+                            {% if reminder.description %}
+                                <div class="mt-2 text-muted small p-2 bg-light rounded">{{ reminder.description }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-hourglass-split display-6 mb-3 d-block text-secondary"></i>
+                    No sent reminders in history.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Activity Logs Column -->
+    <div class="col-lg-6 mb-4">
+        <h3 class="fw-bold font-heading mb-4"><i class="bi bi-journal-text text-primary me-2"></i>Activity logs</h3>
+        
+        <div class="custom-card">
+            {% if logs %}
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <div class="list-group list-group-flush">
+                        {% for log in logs %}
+                            <div class="list-group-item px-0 py-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="fw-bold text-dark small d-block">{{ log.action_type }}</span>
+                                        <p class="text-muted small mb-0 mt-1">{{ log.details }}</p>
+                                    </div>
+                                    <span class="text-muted small" style="font-size: 11px;">
+                                        {{ log.timestamp|date:"H:i:s" }} <br>
+                                        {{ log.timestamp|date:"Y-m-d" }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-journal-x display-6 mb-3 d-block text-secondary"></i>
+                    No activity logs recorded.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

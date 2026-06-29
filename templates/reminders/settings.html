@@ -1,0 +1,60 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Settings - Recallify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="h2 mb-4">Settings</h1>
+
+        <div class="custom-card mb-4">
+            <h5 class="fw-bold font-heading mb-4"><i class="bi bi-person-gear text-primary me-2"></i>Account Configurations</h5>
+            <form>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Primary Notification Email</label>
+                    <input type="email" class="form-control" value="{{ request.user.email }}" readonly>
+                    <div class="form-text text-muted">To update, please contact your administrator.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Preferred Timezone</label>
+                    <select class="form-select" disabled>
+                        <option selected>Asia/Kolkata (GMT+05:30)</option>
+                        <option>UTC (GMT+00:00)</option>
+                        <option>America/New_York (GMT-05:00)</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="custom-card mb-4">
+            <h5 class="fw-bold font-heading mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Notification Channels</h5>
+            <p class="text-muted small mb-4">Select where you want to receive your scheduled task alerts.</p>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="emailSwitch" checked disabled>
+                <label class="form-check-label fw-bold" for="emailSwitch">Inbound System Console & Email</label>
+                <div class="form-text text-muted small">Standard active channel for MVP debugging. Dispatches notifications to standard output log.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="telegramSwitch" disabled>
+                <label class="form-check-label fw-bold text-muted" for="telegramSwitch">Telegram Channel Integration (Future Scope)</label>
+                <div class="form-text text-muted small">Receive automated alerts directly on Telegram via Recallify Bot.</div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="whatsappSwitch" disabled>
+                <label class="form-check-label fw-bold text-muted" for="whatsappSwitch">WhatsApp Notification Channel (Future Scope)</label>
+                <div class="form-text text-muted small">Direct WhatsApp delivery updates.</div>
+            </div>
+        </div>
+
+        <div class="custom-card border-danger bg-danger-subtle bg-opacity-10">
+            <h5 class="fw-bold text-danger font-heading mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Danger Zone</h5>
+            <p class="text-muted small">Once deleted, your account details and reminder schedules cannot be recovered.</p>
+            <button class="btn btn-danger" disabled>Delete Account</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

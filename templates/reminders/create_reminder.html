@@ -1,0 +1,51 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Create Reminder - Recallify{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center mb-4">
+            <h1 class="h2 mb-0">Create New Reminder</h1>
+        </div>
+        
+        <div class="custom-card">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_title" class="form-label fw-bold">Event Name</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label fw-bold">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_scheduled_time" class="form-label fw-bold">Date & Time</label>
+                    {{ form.scheduled_time }}
+                    {% if form.scheduled_time.errors %}
+                        <div class="text-danger small mt-1">{{ form.scheduled_time.errors }}</div>
+                    {% endif %}
+                    <div class="form-text text-muted">Select when you want to receive the notification.</div>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="bi bi-check-lg me-2"></i>Schedule Reminder
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Event Dashboard - Recallify{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">Event Dashboard</h1>
+    <div>
+        <a href="{% url 'create_reminder' %}" class="btn btn-primary-custom">
+            <i class="bi bi-plus-lg me-2"></i>New Reminder
+        </a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <div class="text-muted small">Total Reminders</div>
+                <div class="h3 mb-0 mt-1 fw-bold">{{ total_reminders }}</div>
+            </div>
+            <div class="stat-icon bg-light text-dark">
+                <i class="bi bi-collection"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <div class="text-muted small">Pending / Active</div>
+                <div class="h3 mb-0 mt-1 fw-bold text-warning">{{ pending_reminders }}</div>
+            </div>
+            <div class="stat-icon bg-warning-subtle text-warning">
+                <i class="bi bi-clock-history"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div>
+                <div class="text-muted small">Sent / Dispatched</div>
+                <div class="h3 mb-0 mt-1 fw-bold text-success">{{ sent_reminders }}</div>
+            </div>
+            <div class="stat-icon bg-success-subtle text-success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Events List -->
+<div class="events-table-card p-4">
+    <!-- Headers -->
+    <div class="table-header-row d-none d-md-flex mb-3 pb-2 border-bottom">
+        <div class="table-col-name text-uppercase font-heading">Event Name</div>
+        <div class="table-col-time text-uppercase font-heading">Date & Time</div>
+        <div class="table-col-source text-uppercase font-heading">Source</div>
+        <div class="table-col-desc text-uppercase font-heading">Description</div>
+        <div class="table-col-actions text-uppercase font-heading text-end">Actions</div>
+    </div>
+
+    <!-- Items -->
+    {% if reminders %}
+        {% for reminder in reminders %}
+            <div class="event-item-card event-indicator-{{ reminder.status }}">
+                <!-- Event Name -->
+                <div class="table-col-name">
+                    <span class="event-name-text">{{ reminder.title }}</span>
+                </div>
+                
+                <!-- Date & Time -->
+                <div class="table-col-time text-muted">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    <span>{{ reminder.scheduled_time|date:"Y-m-d H:i" }}</span>
+                </div>
+                
+                <!-- Source -->
+                <div class="table-col-source">
+                    <span class="badge bg-light text-dark border">{{ reminder.source }}</span>
+                </div>
+                
+                <!-- Description -->
+                <div class="table-col-desc pe-3">
+                    <span class="event-desc-text">{{ reminder.description|default:"" }}</span>
+                </div>
+                
+                <!-- Actions -->
+                <div class="table-col-actions text-end">
+                    {% if reminder.status == 'confirmed' %}
+                        <span class="badge-pill badge-confirmed me-2">Confirmed</span>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                    {% elif reminder.status == 'upcoming' %}
+                        <span class="badge-pill badge-upcoming me-2">Upcoming</span>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                    {% else %}
+                        <a href="{% url 'edit_reminder' reminder.id %}" class="action-link-edit"><i class="bi bi-pencil-square"></i> Edit</a>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <div class="text-muted mb-3"><i class="bi bi-calendar-x" style="font-size: 3rem;"></i></div>
+            <h5 class="fw-bold">No active reminders</h5>
+            <p class="text-muted">Create a reminder using the button above or simulate sending an email below.</p>
+        </div>
+    {% endif %}
+
+    <!-- Create via Email CTA Button (matching reference layout) -->
+    <div class="text-center mt-4">
+        <a href="{% url 'email_simulator' %}" class="btn-blue-custom d-inline-block">
+            <i class="bi bi-envelope-paper me-2"></i>Create New Reminder via Email
+        </a>
+    </div>
+</div>
+{% endblock %}
