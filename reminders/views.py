@@ -125,7 +125,7 @@ def logout_view(request):
             details='Logged out successfully.'
         )
         logout(request)
-    return redirect('login')
+    return redirect('landing')
 
 # Dashboard: List upcoming events and manage them
 @login_required
@@ -310,7 +310,6 @@ def subscription_view(request):
     }
     return render(request, 'reminders/profile.html', context)
 
-# Settings Page (Placeholder / Quick custom info)
 @login_required
 def settings_view(request):
     profile = request.user.profile
@@ -319,3 +318,7 @@ def settings_view(request):
         'page': 'settings'
     }
     return render(request, 'reminders/settings.html', context)
+
+def landing_view(request):
+    return render(request, 'reminders/landing.html')
+

@@ -1,0 +1,459 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recallify - Never Forget What Matters</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Landing CSS -->
+    <link href="{% static 'css/landing.css' %}" rel="stylesheet">
+</head>
+<body class="landing-body">
+
+    <!-- Header (Mandate: Logo, Menu, CTA button) -->
+    <header>
+        <nav class="navbar navbar-expand-lg landing-navbar fixed-top py-3">
+            <div class="container">
+                <a class="navbar-brand-custom" href="{% url 'landing' %}">
+                    <span class="brand-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                    <span>Recallify</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNavbar" aria-controls="landingNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="landingNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="#features">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="#vision">Future Vision</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="#pricing">Pricing</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="d-flex align-items-center">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="btn-header-cta">
+                                <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn-header-outline">Log In</a>
+                            <a href="{% url 'signup' %}" class="btn-header-cta">Get Started</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section (Mandate: Banners, stack, video etc) -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Headline & CTA -->
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="hero-tag">
+                        <i class="bi bi-stars me-2"></i>Automate Your Reminders Instantly
+                    </div>
+                    <h1 class="hero-title landing-heading">
+                        Never Let Important Tasks <span class="text-gradient-emerald">Slip Away</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Recallify extracts dates, times, and tasks directly from your emails and custom messages, generating structured calendar reminders automatically. Access everything in one unified dashboard.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'dashboard' %}" class="btn-hero-primary">
+                                <i class="bi bi-arrow-right-circle me-2"></i>Go to Dashboard
+                            </a>
+                        {% else %}
+                            <a href="{% url 'signup' %}" class="btn-hero-primary">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+                            </a>
+                            <a href="{% url 'login' %}" class="btn-hero-secondary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Visual Banner (Stack & Mock Video) -->
+                <div class="col-lg-6">
+                    <div class="hero-visual-container">
+                        <!-- Mandate: Visual Card Stack -->
+                        <div class="card-stack">
+                            <!-- Card 1: Doctor Appointment -->
+                            <div class="stack-card stack-card-1">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="stack-badge stack-badge-orange">Upcoming</span>
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>Tomorrow, 2:00 PM</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">Doctor's Appointment</h5>
+                                <p class="text-muted small mb-0">Scheduled consultation at the medical center. Automated alert will fire via email.</p>
+                            </div>
+                            
+                            <!-- Card 2: Project Deadline -->
+                            <div class="stack-card stack-card-2">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="stack-badge stack-badge-green">Confirmed</span>
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>Friday, 6:00 PM</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">Project Code Freeze</h5>
+                                <p class="text-muted small mb-0">Final confirmation and QA reviews completed. Prepare final release branch.</p>
+                            </div>
+                            
+                            <!-- Card 3: Birthday Party -->
+                            <div class="stack-card stack-card-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="stack-badge stack-badge-blue">Today</span>
+                                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>Today, 7:00 PM</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-1">Birthday Celebration</h5>
+                                <p class="text-muted small mb-0">Dinner at the downtown bistro with team members.</p>
+                            </div>
+                        </div>
+
+                        <!-- Mandate: Video Showcase -->
+                        <div class="video-preview-wrapper" data-bs-toggle="modal" data-bs-target="#videoModal">
+                            <img src="{% static 'images/dashboard_mockup.png' %}" alt="Recallify Dashboard Mockup" class="video-preview-image">
+                            <div class="video-overlay">
+                                <button class="play-button" aria-label="Play Demo Video">
+                                    <i class="bi bi-play-fill"></i>
+                                </button>
+                                <span class="text-white fw-bold mt-3 font-heading">Watch 1-Min Demo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section (Mandate: About your project) -->
+    <section id="about" class="landing-section about-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <span class="text-uppercase text-success fw-bold font-heading small tracking-wider">How It Works</span>
+                    <h2 class="section-title mt-2">What is Recallify?</h2>
+                    <p class="text-muted">
+                        Recallify was created to solve the "inbox clutter" problem. We receive dozens of emails with appointment confirmations, project deadlines, and meetups, only to let them get buried. 
+                    </p>
+                    <p class="text-muted">
+                        With Recallify, you get a custom email inbox. Simply forward emails or schedule notes directly. Our engine automatically parses dates, summaries, and actions, inserting them into your calendar agenda seamlessly.
+                    </p>
+                    <a href="#features" class="btn btn-success px-4 py-2 mt-2">Explore Features</a>
+                </div>
+                
+                <div class="col-lg-6 offset-lg-1">
+                    <div class="about-item">
+                        <div class="about-item-number">1</div>
+                        <div class="about-item-text">
+                            <h4>Forward Emails</h4>
+                            <p>Send details, tickets, or meeting links to your personal Recallify email address.</p>
+                        </div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-item-number">2</div>
+                        <div class="about-item-text">
+                            <h4>Intelligent Extraction</h4>
+                            <p>Our algorithms extract scheduled dates, priorities, titles, and details in seconds.</p>
+                        </div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-item-number">3</div>
+                        <div class="about-item-text">
+                            <h4>Stay Notified</h4>
+                            <p>Get notified right before the deadline. Monitor upcoming items via a beautiful dashboard.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section (Mandate: Features) -->
+    <section id="features" class="landing-section">
+        <div class="container text-center">
+            <span class="text-uppercase text-success fw-bold font-heading small tracking-wider">Powerful Core</span>
+            <h2 class="section-title mt-2">Recallify Features</h2>
+            <p class="section-desc">
+                Everything you need to keep your calendar organized, automate schedule creation, and eliminate manual entries.
+            </p>
+            
+            <div class="row g-4 text-start">
+                <!-- Feature 1 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-envelope-open"></i>
+                        </div>
+                        <h4>Email Parsing</h4>
+                        <p>Simulate parsing incoming schedule alerts using our built-in Email Simulator. Watch unstructured text map directly to concrete dates.</p>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-grid-1x2"></i>
+                        </div>
+                        <h4>Dynamic Dashboard</h4>
+                        <p>A unified grid layout displaying pending, upcoming, and completed reminders with color-coded alerts and indicators.</p>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4>Tier Safeguards</h4>
+                        <p>Flexible plan tiering. Free Tier gives you up to 10 active reminders, while Premium Tier unlocks infinite scheduler creation.</p>
+                    </div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h4>Activity Audits</h4>
+                        <p>Every login, signup, reminder modification, or parsing event is stored inside transparent, audit-ready activity logs.</p>
+                    </div>
+                </div>
+                <!-- Feature 5 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4>Instant Search</h4>
+                        <p>Find appointments and reminders instantly with high-speed query filtering across titles and descriptions.</p>
+                    </div>
+                </div>
+                <!-- Feature 6 -->
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                        <h4>Real-Time Sync</h4>
+                        <p>Your calendar agenda refreshes immediately when reminders are added, edited, or triggered through simulators.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Vision Section (Mandate: vision of the project for future) -->
+    <section id="vision" class="landing-section vision-section">
+        <div class="container text-center">
+            <span class="text-uppercase text-success fw-bold font-heading small tracking-wider">What's Next</span>
+            <h2 class="section-title mt-2">Future Project Vision</h2>
+            <p class="section-desc">
+                We are actively building the future of automated scheduling. Here's a look at what is coming to Recallify soon.
+            </p>
+            
+            <div class="row g-4 text-start vision-grid mt-4">
+                <!-- Vision item 1 -->
+                <div class="col-lg-4">
+                    <div class="vision-card">
+                        <span class="vision-badge">Q3 2026</span>
+                        <h4>AI Followup Agent</h4>
+                        <p>An intelligent agent that reviews your pending tasks, drafting clarification emails or followups automatically if meeting details are missing.</p>
+                    </div>
+                </div>
+                <!-- Vision item 2 -->
+                <div class="col-lg-4">
+                    <div class="vision-card">
+                        <span class="vision-badge">Q4 2026</span>
+                        <h4>WhatsApp & Telegram Integrations</h4>
+                        <p>Forward voice notes or photos of flyers straight to the Recallify chat handle. Our backend parses details and schedules the reminder instantly.</p>
+                    </div>
+                </div>
+                <!-- Vision item 3 -->
+                <div class="col-lg-4">
+                    <div class="vision-card">
+                        <span class="vision-badge">Q1 2027</span>
+                        <h4>Smart Calendar Feed</h4>
+                        <p>Sync your Recallify reminders with Google Calendar, Apple Calendar, or Outlook via a secure, read-only ICS feed URL.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section (Simple Premium Tier showcase) -->
+    <section id="pricing" class="landing-section">
+        <div class="container text-center">
+            <span class="text-uppercase text-success fw-bold font-heading small tracking-wider">Flexible Plans</span>
+            <h2 class="section-title mt-2">Simple, Transparent Pricing</h2>
+            <p class="section-desc">Get started for free or unlock unlimited reminders with Premium.</p>
+            
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-5 mb-4">
+                    <div class="feature-card text-center d-flex flex-column justify-content-between">
+                        <div>
+                            <h4 class="mb-2">Free Tier</h4>
+                            <h2 class="fw-bold mb-4 font-heading text-dark">$0 <span class="fs-6 text-muted">/ forever</span></h2>
+                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 250px;">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Up to 10 active reminders</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Email simulator testing</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Activity logs dashboard</li>
+                                <li class="mb-2 text-muted"><i class="bi bi-x-circle-fill text-danger me-2"></i>Unlimited reminders</li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-success py-2.5 w-100">Sign Up Free</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-5 mb-4">
+                    <div class="feature-card text-center border-success d-flex flex-column justify-content-between" style="box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);">
+                        <div>
+                            <h4 class="mb-2">Premium Tier</h4>
+                            <h2 class="fw-bold mb-4 font-heading text-success">$5 <span class="fs-6 text-muted">/ month</span></h2>
+                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 250px;">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Unlimited active reminders</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Priority email parsing</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Instant push notifications</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Dedicated support queue</li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'signup' %}" class="btn btn-success py-2.5 w-100">Upgrade to Premium</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section (Mandate: CTA) -->
+    <section class="cta-section text-center">
+        <div class="container">
+            <div class="cta-container">
+                <h2 class="cta-title font-heading">Ready to Master Your Schedule?</h2>
+                <p class="cta-subtitle">
+                    Join thousands of users who have streamlined their calendars and stopped missing appointments.
+                </p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="btn-cta-green">
+                        <i class="bi bi-speedometer2 me-2"></i>Access Dashboard
+                    </a>
+                {% else %}
+                    <a href="{% url 'signup' %}" class="btn-cta-green">
+                        <i class="bi bi-rocket-takeoff me-2"></i>Get Started For Free
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Mandate: Footer, also link it to the front end and user login) -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <a class="footer-brand" href="{% url 'landing' %}">
+                        <span class="brand-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </span>
+                        <span>Recallify</span>
+                    </a>
+                    <p class="footer-text mb-4">
+                        Recallify is an intelligent schedule manager that parses incoming notices into precise calendar actions. Keep your inbox clear and your agenda populated.
+                    </p>
+                    <div class="footer-social-links">
+                        <a href="#" class="social-icon-btn" aria-label="Github"><i class="bi bi-github"></i></a>
+                        <a href="#" class="social-icon-btn" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="social-icon-btn" aria-label="Linkedin"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 offset-lg-2 col-md-4 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Navigation</h5>
+                    <ul class="footer-links-list">
+                        <li><a href="#about">About Project</a></li>
+                        <li><a href="#features">Features Grid</a></li>
+                        <li><a href="#vision">Future Roadmap</a></li>
+                        <li><a href="#pricing">Price Tiers</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <h5 class="footer-heading">App Access</h5>
+                    <ul class="footer-links-list">
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'dashboard' %}">User Dashboard</a></li>
+                            <li><a href="{% url 'settings' %}">Account Settings</a></li>
+                            <li><a href="{% url 'logout' %}" class="text-danger">Logout</a></li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}">User Login</a></li>
+                            <li><a href="{% url 'signup' %}">Create Account</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Legal</h5>
+                    <ul class="footer-links-list">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Guidelines</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="footer-divider">
+            
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <span class="footer-copyright">&copy; 2026 Recallify Inc. All rights reserved.</span>
+                <span class="footer-copyright text-muted">Designed for intelligent task extraction.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-white font-heading" id="videoModalLabel">Recallify Product Walkthrough</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 pt-3">
+                    <div class="ratio ratio-16x9">
+                        <!-- We embed a mock video placeholder/instruction video or a placeholder frame -->
+                        <div class="d-flex align-items-center justify-content-center bg-black text-white p-5 flex-column">
+                            <i class="bi bi-play-btn-fill text-success display-1 mb-4"></i>
+                            <h3 class="font-heading fw-bold">Demo Walkthrough Video</h3>
+                            <p class="text-muted text-center max-width-500">
+                                This 1-minute demo walks you through forwarding a confirmation email to Recallify and seeing it instantly populate your Dashboard calendar agenda.
+                            </p>
+                            <button class="btn btn-success px-4 py-2 mt-3" data-bs-dismiss="modal">Close Walkthrough</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
