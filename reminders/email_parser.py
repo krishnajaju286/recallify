@@ -63,53 +63,58 @@ def parse_relative_date(date_str, now):
 
 def parse_time(time_str):
     """
-    Parses terms like '2:00 PM', '10:00 AM', '7:00 PM', '10 AM', '15:30' and returns a time object.
+    Parses terms like:
+    - '2:00 PM', '10:00 AM', '7:00 PM', '10 AM' (12-hour format with AM/PM)
+    - '15:30', '16:00', '04:00', '4:00' (strictly 24-hour format when AM/PM is omitted)
     """
     time_str = time_str.upper().strip()
     
-    # Match HH:MM AM/PM
-    match = re.search(r'(\d{1,2}):(\d{2})\s*(AM|PM)?', time_str)
-    if match:
-        hour = int(match.group(1))
-        minute = int(match.group(2))
-        ampm = match.group(3)
-        
-        if ampm == 'PM' and hour < 12:
-            hour += 12
-        elif ampm == 'AM' and hour == 12:
-            hour = 0
+    # 1. Look for AM/PM in the string
+    has_ampm = 'AM' in time_str or 'PM' in time_str
+    
+    if has_ampm:
+        # Match HH:MM AM/PM
+        match = re.search(r'(\d{1,2}):(\d{2})\s*(AM|PM)', time_str)
+        if match:
+            hour = int(match.group(1))
+            minute = int(match.group(2))
+            ampm = match.group(3)
             
-        try:
-            return datetime.time(hour, minute)
-        except ValueError:
-            pass
+            if ampm == 'PM' and hour < 12:
+                hour += 12
+            elif ampm == 'AM' and hour == 12:
+                hour = 0
+            try:
+                return datetime.time(hour, minute)
+            except ValueError:
+                pass
+                
+        # Match HH AM/PM
+        match_hour_only = re.search(r'(\d{1,2})\s*(AM|PM)', time_str)
+        if match_hour_only:
+            hour = int(match_hour_only.group(1))
+            ampm = match_hour_only.group(2)
             
-    # Match HH AM/PM
-    match_hour_only = re.search(r'(\d{1,2})\s*(AM|PM)', time_str)
-    if match_hour_only:
-        hour = int(match_hour_only.group(1))
-        ampm = match_hour_only.group(2)
-        
-        if ampm == 'PM' and hour < 12:
-            hour += 12
-        elif ampm == 'AM' and hour == 12:
-            hour = 0
-            
-        try:
-            return datetime.time(hour, 0)
-        except ValueError:
-            pass
-            
-    # Match 24 hour HH:MM
-    match_24 = re.search(r'(\d{2}):(\d{2})', time_str)
-    if match_24:
-        hour = int(match_24.group(1))
-        minute = int(match_24.group(2))
-        try:
-            return datetime.time(hour, minute)
-        except ValueError:
-            pass
-            
+            if ampm == 'PM' and hour < 12:
+                hour += 12
+            elif ampm == 'AM' and hour == 12:
+                hour = 0
+            try:
+                return datetime.time(hour, 0)
+            except ValueError:
+                pass
+    else:
+        # Strictly 24-hour format (no AM/PM)
+        # Match HH:MM (24-hour)
+        match_24 = re.search(r'(\d{1,2}):(\d{2})', time_str)
+        if match_24:
+            hour = int(match_24.group(1))
+            minute = int(match_24.group(2))
+            try:
+                return datetime.time(hour, minute)
+            except ValueError:
+                pass
+                
     # Default fallback: 9:00 AM
     return datetime.time(9, 0)
 
