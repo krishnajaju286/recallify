@@ -111,6 +111,11 @@ def login_view(request):
                 action_type='Login',
                 details='Logged in successfully.'
             )
+            try:
+                from django.core.management import call_command
+                call_command('fetch_emails')
+            except Exception as e:
+                print(f"Error fetching emails on login redirect: {e}")
             return redirect('dashboard')
         else:
             messages.error(request, "Invalid username or password.")
@@ -130,6 +135,12 @@ def logout_view(request):
 # Dashboard: List upcoming events and manage them
 @login_required
 def dashboard_view(request):
+    try:
+        from django.core.management import call_command
+        call_command('fetch_emails')
+    except Exception as e:
+        print(f"Error fetching emails on dashboard load: {e}")
+
     query = request.GET.get('search', '')
     
     # Filter by user and optional search
