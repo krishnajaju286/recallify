@@ -118,6 +118,55 @@ def parse_time(time_str):
     # Default fallback: 9:00 AM
     return datetime.time(9, 0)
 
+def extract_event_title(text):
+    if not text:
+        return ""
+    cleaned = text.lower()
+    
+    # 1. Remove dates and time stamps using regex
+    cleaned = re.sub(r'\b\d{4}[-/]\d{1,2}[-/]\d{1,2}\b', '', cleaned)
+    cleaned = re.sub(r'\b\d{1,2}[-/]\d{1,2}[-/]\d{4}\b', '', cleaned)
+    cleaned = re.sub(r'\b\d{1,2}:\d{2}\s*(?:am|pm)?\b', '', cleaned)
+    cleaned = re.sub(r'\b\d{1,2}\s*(?:am|pm)\b', '', cleaned)
+    
+    # 2. Remove relative date keywords
+    to_remove = [
+        "next weekend", "this weekend", "weekend", "tomorrow", "today",
+        "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday",
+        "on monday", "on tuesday", "on wednesday", "on thursday", "on friday", "on saturday", "on sunday",
+        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    ]
+    
+    for kw in to_remove:
+        cleaned = re.sub(r'\b' + re.escape(kw) + r'\b', '', cleaned)
+        
+    # 3. Remove common helper prepositions and scheduling patterns
+    prep_patterns = [
+        r'\bremind me to\b',
+        r'\bremind me of\b',
+        r'\bremind me\b',
+        r'\bschedule a\b',
+        r'\bschedule\b',
+        r'\breminder for\b',
+        r'\breminder to\b',
+        r'\bfor\b',
+        r'\bat\b',
+        r'\bon\b',
+        r'\bto\b',
+        r'\bin\b'
+    ]
+    
+    for pat in prep_patterns:
+        cleaned = re.sub(pat, '', cleaned)
+        
+    # Clean up punctuation and spacing
+    cleaned = re.sub(r'\s+', ' ', cleaned)
+    cleaned = cleaned.strip(',.?!;:-()[]{} ')
+    
+    if cleaned:
+        return cleaned[0].upper() + cleaned[1:]
+    return ""
+
 def parse_email_reminder(subject, body):
     """
     Main parsing function. Takes subject and body, and returns a dictionary with:
@@ -126,13 +175,22 @@ def parse_email_reminder(subject, body):
     - scheduled_time (datetime, timezone-aware)
     """
     # 1. Determine title
-    title = subject.strip() if subject and subject.strip() else "Email Reminder"
+    raw_subject = subject.strip() if subject and subject.strip() else ""
+    title = re.sub(r'^(fwd|re|fw|reply|subject):\s*', '', raw_subject, flags=re.IGNORECASE).strip()
     
-    # Remove prefix like Fwd:, Re:, etc.
-    title = re.sub(r'^(fwd|re|fw|reply|subject):\s*', '', title, flags=re.IGNORECASE).strip()
+    is_generic = not title or title.lower() in ["reminder", "new reminder", "email reminder", "schedule", "subject", "none", "null"]
     
     # 2. Description is the body
     description = body.strip() if body else ""
+    
+    if is_generic and description:
+        extracted = extract_event_title(description)
+        if extracted:
+            title = extracted
+            
+    # Default title if still empty
+    if not title:
+        title = "Email Reminder"
     
     # 3. Date & Time Parsing
     # Combine subject and body for analysis
