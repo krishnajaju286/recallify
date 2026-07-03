@@ -147,13 +147,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'myreacallify@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-gmail-app-password-here'
+EMAIL_HOST_USER = 'myrecallify@gmail.com'
+EMAIL_HOST_PASSWORD = 'alzeibpbfodezeas'
 
 # Email settings for IMAP (Receiving/Polling emails)
 IMAP_SERVER = 'imap.gmail.com'
 IMAP_PORT = 993
-IMAP_EMAIL = 'myreacallify@gmail.com'
-IMAP_PASSWORD = 'your-gmail-app-password-here'
+IMAP_EMAIL = 'myrecallify@gmail.com'
+IMAP_PASSWORD = 'alzeibpbfodezeas'
 
 
