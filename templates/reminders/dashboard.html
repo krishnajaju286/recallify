@@ -93,6 +93,9 @@
                     {% elif reminder.status == 'upcoming' %}
                         <span class="badge-pill badge-upcoming me-2">Upcoming</span>
                         <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                    {% elif reminder.status == 'pending' %}
+                        <span class="badge-pill bg-warning text-dark me-2">Pending Confirmation</span>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Cancel</a>
                     {% else %}
                         <a href="{% url 'edit_reminder' reminder.id %}" class="action-link-edit"><i class="bi bi-pencil-square"></i> Edit</a>
                         <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>

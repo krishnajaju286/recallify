@@ -199,10 +199,45 @@ def create_reminder(request):
 def email_sim_view(request):
     profile = request.user.profile
     if request.method == 'POST':
-        # User is simulating sending an email to Recallify
-        subject = request.POST.get('subject')
-        body = request.POST.get('body')
+        import re
+        subject = request.POST.get('subject', '').strip()
+        body = request.POST.get('body', '').strip()
         
+        # 1. Check if this is a Yes/No response to a pending reminder
+        clean_body = body.lower().strip()
+        clean_subject = subject.lower().strip()
+        
+        is_yes = clean_body == 'yes' or clean_subject == 'yes'
+        is_no = clean_body == 'no' or clean_subject == 'no'
+        
+        if is_yes or is_no:
+            # Find the most recent pending reminder for this user
+            pending_reminder = Reminder.objects.filter(user=request.user, status='pending').order_by('-created_at').first()
+            if pending_reminder:
+                if is_yes:
+                    pending_reminder.status = 'confirmed'
+                    pending_reminder.save()
+                    ActivityLog.objects.create(
+                        user=request.user,
+                        action_type='Email Confirmation Received',
+                        details=f"User replied YES. Confirmed reminder: '{pending_reminder.title}' scheduled for {pending_reminder.scheduled_time}."
+                    )
+                    messages.success(request, f"Confirmation received! Reminder '{pending_reminder.title}' is now CONFIRMED.")
+                else:
+                    pending_reminder.status = 'failed'
+                    pending_reminder.save()
+                    ActivityLog.objects.create(
+                        user=request.user,
+                        action_type='Email Confirmation Received',
+                        details=f"User replied NO. Cancelled/Failed reminder: '{pending_reminder.title}'."
+                    )
+                    messages.warning(request, f"Confirmation received! Reminder '{pending_reminder.title}' has been CANCELLED.")
+                return redirect('dashboard')
+            else:
+                messages.warning(request, "No pending reminders requiring confirmation were found.")
+                return redirect('email_simulator')
+        
+        # 2. Regular reminder parsing
         # Check limit
         if profile.subscription_tier == 'free':
             active_count = Reminder.objects.filter(user=request.user, status__in=['pending', 'upcoming', 'confirmed']).count()
@@ -213,26 +248,64 @@ def email_sim_view(request):
         # Parse simulated email
         parsed_data = parse_email_reminder(subject, body)
         
-        # Create reminder
-        reminder = Reminder.objects.create(
-            user=request.user,
-            title=parsed_data['title'],
-            description=parsed_data['description'],
-            scheduled_time=parsed_data['scheduled_time'],
-            source='Email',
-            status='confirmed', # Created via email defaults to confirmed
-            raw_email_body=f"Subject: {subject}\n\n{body}"
-        )
+        # Analyze subject and body to verify if AM/PM or a designated time is mentioned
+        combined_text = f"{subject} {body}".lower()
+        has_ampm = 'am' in combined_text or 'pm' in combined_text
         
-        # Log action
-        ActivityLog.objects.create(
-            user=request.user,
-            action_type='Created Reminder via Email',
-            details=f"Email received & parsed. Created reminder: '{reminder.title}' scheduled for {reminder.scheduled_time}."
-        )
+        time_pattern = r'(\d{1,2}:\d{2}\s*(?:am|pm)?|\d{1,2}\s*(?:am|pm))'
+        has_designated_time = bool(re.search(time_pattern, combined_text))
         
-        messages.success(request, f"Email received! Successfully parsed and scheduled reminder: '{reminder.title}'")
-        return redirect('dashboard')
+        needs_confirmation = not has_ampm or not has_designated_time
+        
+        if needs_confirmation:
+            # Create reminder in PENDING status
+            reminder = Reminder.objects.create(
+                user=request.user,
+                title=parsed_data['title'],
+                description=parsed_data['description'],
+                scheduled_time=parsed_data['scheduled_time'],
+                source='Email',
+                status='pending',
+                raw_email_body=f"Subject: {subject}\n\n{body}"
+            )
+            
+            # Log system action
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='Confirmation Request Sent',
+                details=f"Omission detected in email time details. Sent confirmation request for '{reminder.title}' (scheduled: {reminder.scheduled_time}). Waiting for user reply."
+            )
+            
+            # Alert user via UI messages
+            messages.warning(
+                request, 
+                f"We noticed that your email lacks an explicit AM/PM or a designated time! "
+                f"A confirmation request has been sent to {request.user.email}. "
+                f"Please reply 'Yes' or 'No' in this simulator to confirm or cancel the schedule."
+            )
+            return redirect('email_simulator')
+            
+        else:
+            # Create reminder in CONFIRMED status directly
+            reminder = Reminder.objects.create(
+                user=request.user,
+                title=parsed_data['title'],
+                description=parsed_data['description'],
+                scheduled_time=parsed_data['scheduled_time'],
+                source='Email',
+                status='confirmed',
+                raw_email_body=f"Subject: {subject}\n\n{body}"
+            )
+            
+            # Log action
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='Created Reminder via Email',
+                details=f"Email received & parsed. Created reminder: '{reminder.title}' scheduled for {reminder.scheduled_time}."
+            )
+            
+            messages.success(request, f"Email received! Successfully parsed and scheduled reminder: '{reminder.title}'")
+            return redirect('dashboard')
     else:
         form = EmailSimForm(initial={'sender_email': request.user.email or f"{request.user.username}@example.com"})
     
