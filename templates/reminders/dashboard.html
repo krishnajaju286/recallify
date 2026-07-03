@@ -6,6 +6,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h2 mb-0">Event Dashboard</h1>
     <div>
+        {% if request.user.is_superuser %}
+            <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#usersDirectoryModal">
+                <i class="bi bi-people-fill me-2"></i>Users Directory
+            </button>
+        {% endif %}
         <a href="{% url 'create_reminder' %}" class="btn btn-primary-custom">
             <i class="bi bi-plus-lg me-2"></i>New Reminder
         </a>
@@ -118,4 +123,113 @@
         </a>
     </div>
 </div>
+
+{% if request.user.is_superuser %}
+<!-- Users Directory Modal -->
+<div class="modal fade" id="usersDirectoryModal" tabindex="-1" aria-labelledby="usersDirectoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+            <div class="modal-header bg-success text-white py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <h5 class="modal-title font-heading fw-bold" id="usersDirectoryModalLabel">
+                    <i class="bi bi-people-fill me-2"></i>Users Directory & Reminders
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-4">Click a user's name to view their active reminder schedules in detail.</p>
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead>
+                            <tr class="table-light">
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th class="text-center">Pending</th>
+                                <th class="text-center">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users_list %}
+                                <tr>
+                                    <td>
+                                        <a href="#" class="text-decoration-none fw-bold text-success user-toggle-link" data-bs-toggle="collapse" data-bs-target="#user-reminders-{{ u.id }}" aria-expanded="false" style="font-size: 15px;">
+                                            {{ u.username }}
+                                            {% if u.profile.subscription_tier == 'premium' %}
+                                                <i class="bi bi-star-fill text-warning ms-1" title="Premium Tier User" style="text-shadow: 0 0 3px rgba(245, 158, 11, 0.4); font-size: 13px;"></i>
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ u.email|default:"No email address registered" }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- Red circular button with number of pending reminders -->
+                                        <span class="badge-circle-red" style="width: 32px; height: 32px; border-radius: 50%; background-color: #dc3545; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: help; box-shadow: 0 2px 6px rgba(220, 53, 69, 0.25);" title="Pending Reminders: {{ u.pending_count }}">
+                                            {{ u.pending_count }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- Grey circular button with total reminders set -->
+                                        <span class="badge-circle-grey" style="width: 32px; height: 32px; border-radius: 50%; background-color: #6c757d; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: help; box-shadow: 0 2px 6px rgba(108, 117, 125, 0.25);" title="Total Reminders: {{ u.total_count }}">
+                                            {{ u.total_count }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <!-- Collapsible row for user's reminders details -->
+                                <tr class="collapse" id="user-reminders-{{ u.id }}">
+                                    <td colspan="4" class="p-3 bg-light">
+                                        <div class="card card-body border-0 shadow-sm p-3 bg-white" style="border-radius: 12px;">
+                                            <h6 class="fw-bold mb-3 text-success font-heading"><i class="bi bi-list-task me-2"></i>Active Reminders for {{ u.username }}</h6>
+                                            {% if u.reminders.all %}
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm align-middle table-hover mb-0" style="font-size: 13.5px;">
+                                                        <thead>
+                                                            <tr class="table-light">
+                                                                <th>Event Name</th>
+                                                                <th>Date & Time</th>
+                                                                <th>Source</th>
+                                                                <th>Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for rem in u.reminders.all %}
+                                                                <tr>
+                                                                    <td><strong>{{ rem.title }}</strong></td>
+                                                                    <td class="text-muted"><i class="bi bi-clock me-1"></i>{{ rem.scheduled_time|date:"Y-m-d H:i" }}</td>
+                                                                    <td><span class="badge bg-light text-dark border">{{ rem.source }}</span></td>
+                                                                    <td>
+                                                                        {% if rem.status == 'confirmed' %}
+                                                                            <span class="badge bg-success-subtle text-success border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Confirmed</span>
+                                                                        {% elif rem.status == 'upcoming' %}
+                                                                            <span class="badge bg-warning-subtle text-warning border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Upcoming</span>
+                                                                        {% elif rem.status == 'pending' %}
+                                                                            <span class="badge bg-danger-subtle text-danger border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Pending Confirmation</span>
+                                                                        {% elif rem.status == 'sent' %}
+                                                                            <span class="badge bg-primary-subtle text-primary border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Sent</span>
+                                                                        {% else %}
+                                                                            <span class="badge bg-secondary-subtle text-secondary border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">{{ rem.status }}</span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-center py-2 text-muted small">No reminders set currently.</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

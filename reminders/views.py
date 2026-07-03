@@ -160,6 +160,14 @@ def dashboard_view(request):
     sent_reminders = reminders.filter(status='sent').count()
     pending_reminders = active_reminders.count()
     
+    # Fetch user directory details for superusers
+    users_list = None
+    if request.user.is_superuser:
+        users_list = list(User.objects.all().select_related('profile').prefetch_related('reminders').order_by('username'))
+        for u in users_list:
+            u.pending_count = u.reminders.filter(status__in=['pending', 'upcoming', 'confirmed']).count()
+            u.total_count = u.reminders.count()
+    
     context = {
         'reminders': active_reminders,
         'total_reminders': total_reminders,
@@ -167,7 +175,8 @@ def dashboard_view(request):
         'pending_reminders': pending_reminders,
         'search_query': query,
         'current_time': timezone.now(),
-        'page': 'dashboard'
+        'page': 'dashboard',
+        'users_list': users_list
     }
     return render(request, 'reminders/dashboard.html', context)
 
