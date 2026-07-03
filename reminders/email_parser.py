@@ -16,6 +16,19 @@ def parse_relative_date(date_str, now):
     if "tomorrow" in date_str:
         return now.date() + datetime.timedelta(days=1)
         
+    # 2.5 Weekend
+    if "weekend" in date_str:
+        saturday_idx = 5
+        days_ahead = saturday_idx - now.weekday()
+        if "next" in date_str:
+            if days_ahead <= 0:
+                days_ahead += 7
+            days_ahead += 7
+        else:
+            if days_ahead <= 0:
+                days_ahead += 7
+        return now.date() + datetime.timedelta(days=days_ahead)
+        
     # 3. Next [Weekday]
     weekdays = {
         'monday': 0, 'tue': 1, 'tuesday': 1, 'wed': 2, 'wednesday': 2,
@@ -132,7 +145,7 @@ def parse_email_reminder(subject, body):
         target_time = parse_time(time_matches[0])
     
     # Try relative date indicators
-    date_keywords = ["tomorrow", "today", "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday"]
+    date_keywords = ["next weekend", "this weekend", "weekend", "tomorrow", "today", "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday"]
     found_keyword = None
     for kw in date_keywords:
         if kw in combined_text:
