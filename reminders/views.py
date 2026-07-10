@@ -415,3 +415,43 @@ def settings_view(request):
 def landing_view(request):
     return render(request, 'reminders/landing.html')
 
+@login_required
+def confirm_pending_reminder(request, pk):
+    reminder = get_object_or_404(Reminder, id=pk, user=request.user)
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        scheduled_time_str = request.POST.get('scheduled_time')
+        action = request.POST.get('action')  # 'confirm' or 'save'
+        
+        if title:
+            reminder.title = title
+        if scheduled_time_str:
+            try:
+                from django.utils.dateparse import parse_datetime
+                naive_dt = parse_datetime(scheduled_time_str)
+                if naive_dt:
+                    from django.utils.timezone import get_current_timezone, make_aware
+                    tz = get_current_timezone()
+                    reminder.scheduled_time = make_aware(naive_dt, tz)
+            except Exception as e:
+                messages.error(request, f"Error parsing scheduled time: {e}")
+                return redirect('dashboard')
+                
+        if action == 'confirm':
+            reminder.status = 'confirmed'
+            messages.success(request, f"Reminder '{reminder.title}' has been confirmed and scheduled!")
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='Reminder Confirmed',
+                details=f"Manually confirmed reminder '{reminder.title}' via inline dashboard modal."
+            )
+        else:
+            messages.success(request, f"Reminder '{reminder.title}' details updated.")
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='Reminder Edited',
+                details=f"Edited pending reminder details for '{reminder.title}'."
+            )
+        reminder.save()
+    return redirect('dashboard')
+

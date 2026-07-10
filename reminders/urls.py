@@ -15,6 +15,7 @@ urlpatterns = [
     path('create/', views.create_reminder, name='create_reminder'),
     path('edit/<int:pk>/', views.edit_reminder, name='edit_reminder'),
     path('delete/<int:pk>/', views.delete_reminder, name='delete_reminder'),
+    path('confirm/<int:pk>/', views.confirm_pending_reminder, name='confirm_pending_reminder'),
     
     # Features
     path('email-simulator/', views.email_sim_view, name='email_simulator'),
