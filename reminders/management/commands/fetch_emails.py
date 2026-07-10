@@ -11,6 +11,19 @@ from django.utils import timezone
 from reminders.models import Reminder, ActivityLog
 from reminders.email_parser import parse_email_reminder
 
+def extract_email_reply_text(body):
+    if not body:
+        return ""
+    lines = body.splitlines()
+    reply_lines = []
+    for line in lines:
+        line_strip = line.strip()
+        # Detect common email quote boundaries
+        if line_strip.startswith('>') or line_strip.startswith('---') or (line_strip.lower().startswith('on ') and 'wrote:' in line_strip.lower()):
+            break
+        reply_lines.append(line)
+    return "\n".join(reply_lines).strip()
+
 class Command(BaseCommand):
     help = 'Fetches incoming email reminders from the Gmail inbox and parses them.'
 
@@ -101,11 +114,12 @@ class Command(BaseCommand):
                     continue
                 
                 # 7. Check if this is a Yes/No response to a pending reminder
-                clean_body = body.lower().strip()
+                reply_body = extract_email_reply_text(body)
+                clean_body = reply_body.lower().strip().strip(',.?!;:-')
                 clean_subject = subject.lower().strip()
                 
-                is_yes = clean_body == 'yes' or clean_subject == 'yes'
-                is_no = clean_body == 'no' or clean_subject == 'no'
+                is_yes = bool(re.match(r'^(yes|confirm|y\b)', clean_body)) or clean_subject == 'yes'
+                is_no = bool(re.match(r'^(no|cancel|n\b)', clean_body)) or clean_subject == 'no'
                 
                 if is_yes or is_no:
                     # Find the latest pending reminder for this user

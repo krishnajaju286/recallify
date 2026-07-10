@@ -224,11 +224,11 @@ def email_sim_view(request):
         body = request.POST.get('body', '').strip()
         
         # 1. Check if this is a Yes/No response to a pending reminder
-        clean_body = body.lower().strip()
+        clean_body = body.lower().strip().strip(',.?!;:-')
         clean_subject = subject.lower().strip()
         
-        is_yes = clean_body == 'yes' or clean_subject == 'yes'
-        is_no = clean_body == 'no' or clean_subject == 'no'
+        is_yes = bool(re.match(r'^(yes|confirm|y\b)', clean_body)) or clean_subject == 'yes'
+        is_no = bool(re.match(r'^(no|cancel|n\b)', clean_body)) or clean_subject == 'no'
         
         if is_yes or is_no:
             # Find the most recent pending reminder for this user
