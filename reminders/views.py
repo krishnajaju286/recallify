@@ -268,14 +268,12 @@ def email_sim_view(request):
         # Parse simulated email
         parsed_data = parse_email_reminder(subject, body)
         
-        # Analyze subject and body to verify if AM/PM or a designated time is mentioned
+        # Check for explicit AM/PM or strictly 24-hour style format
         combined_text = f"{subject} {body}".lower()
-        has_ampm = 'am' in combined_text or 'pm' in combined_text
+        has_explicit_ampm = bool(re.search(r'\b\d{1,2}(?::\d{2})?\s*(am|pm)\b', combined_text))
+        has_explicit_24h = bool(re.search(r'\b(?:[01]\d|2[0-3]):[0-5]\d\b', combined_text))
         
-        time_pattern = r'(\d{1,2}:\d{2}\s*(?:am|pm)?|\d{1,2}\s*(?:am|pm))'
-        has_designated_time = bool(re.search(time_pattern, combined_text))
-        
-        needs_confirmation = not has_ampm or not has_designated_time
+        needs_confirmation = not (has_explicit_ampm or has_explicit_24h)
         
         if needs_confirmation:
             # Create reminder in PENDING status
