@@ -59,4 +59,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    // 4. Idle Auto-Reload (Dashboard Only)
+    const dashboardReloadBtn = document.getElementById('dashboardReloadBtn');
+    if (dashboardReloadBtn) {
+        let idleTimer;
+        const idleLimit = 30000; // 30 seconds
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(function() {
+                window.location.reload();
+            }, idleLimit);
+        }
+
+        // Add activity event listeners to reset the timer
+        const events = ['mousemove', 'keypress', 'click', 'scroll', 'touchstart'];
+        events.forEach(function(evt) {
+            document.addEventListener(evt, resetIdleTimer, true);
+        });
+
+        // Initialize on load
+        resetIdleTimer();
+    }
 });
