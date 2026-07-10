@@ -1,0 +1,194 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Admin Directory - Recallify{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">{{ dashboard_heading }}</h1>
+    <div>
+        <button id="dashboardReloadBtn" class="btn btn-outline-secondary me-2" onclick="window.location.reload();" title="Refresh Directory">
+            <i class="bi bi-arrow-clockwise me-1"></i>Reload
+        </button>
+    </div>
+</div>
+
+<!-- Admin Dashboard User Directory Grid -->
+<div class="events-table-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold font-heading mb-0"><i class="bi bi-people-fill text-success me-2"></i>Registered Users</h4>
+        
+        <!-- Search bar -->
+        <form method="GET" action="{% url 'admin_dashboard' %}" class="d-flex gap-2" style="max-width: 300px;">
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search username/email..." value="{{ search_query|default:'' }}">
+            <button type="submit" class="btn btn-sm btn-success px-3"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table align-middle table-hover">
+            <thead>
+                <tr class="table-light">
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Subscription Plan</th>
+                    <th class="text-center">Reminder Emails Sent</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users_data %}
+                    <tr>
+                        <td>
+                            {% if u.is_online %}
+                                <span class="bg-success rounded-circle d-inline-block me-1.5 animate-pulse" style="width: 9px; height: 9px; vertical-align: middle; box-shadow: 0 0 6px #10b981;" title="Active Now"></span>
+                            {% endif %}
+                            <span class="fw-bold" style="font-size: 15px;">
+                                {{ u.username }}
+                                {% if u.subscription_tier == 'premium' %}
+                                    <i class="bi bi-star-fill text-warning ms-1" title="Premium Tier User" style="text-shadow: 0 0 3px rgba(245, 158, 11, 0.4); font-size: 13px;"></i>
+                                {% endif %}
+                            </span>
+                            {% if not u.is_active %}
+                                <span class="badge bg-danger ms-2" style="font-size: 10px;">Suspended</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="text-muted">{{ u.email }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {% if u.subscription_tier == 'premium' %}bg-success{% else %}bg-secondary{% endif %} px-2.5 py-1 text-capitalize">
+                                {{ u.get_subscription_tier_display }}
+                             </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary rounded-pill px-3 py-1.5 fw-bold" style="font-size: 13px;">
+                                {{ u.sent_emails }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#adminUserModal-{{ u.id }}">
+                                <i class="bi bi-eye me-1"></i>View Details
+                            </button>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No registered users found matching query.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Admin Details Modals (Rendered Flat at Bottom for superusers) -->
+{% for u in users_data %}
+    <div class="modal fade" id="adminUserModal-{{ u.id }}" tabindex="-1" aria-labelledby="adminUserModalLabel-{{ u.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+                <div class="modal-header bg-success text-white py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <h5 class="modal-title font-heading fw-bold" id="adminUserModalLabel-{{ u.id }}">
+                        <i class="bi bi-person-badge-fill me-2"></i>User Profile: {{ u.username }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-start">
+                    <div class="row g-4">
+                        <!-- Left Column: Info & Suspend controls -->
+                        <div class="col-md-6 border-end">
+                            <h6 class="fw-bold text-success font-heading mb-3"><i class="bi bi-info-circle-fill me-2"></i>User Information</h6>
+                            <p class="mb-2"><strong>Full Name:</strong> {{ u.full_name|default:"Not provided" }}</p>
+                            <p class="mb-2"><strong>Email:</strong> {{ u.email }}</p>
+                            <p class="mb-2"><strong>Phone Number:</strong> {{ u.phone_number }}</p>
+                            <p class="mb-2"><strong>Joined Date:</strong> {{ u.date_joined|date:"Y-m-d H:i" }}</p>
+                            <p class="mb-2"><strong>Last Login IP:</strong> <code>{{ u.last_login_ip }}</code></p>
+                            <p class="mb-2"><strong>Subscription Plan:</strong> <span class="badge {% if u.subscription_tier == 'premium' %}bg-success{% else %}bg-secondary{% endif %}">{{ u.get_subscription_tier_display }}</span></p>
+                            <p class="mb-2"><strong>Current Active Reminders:</strong> {{ u.current_reminders }}</p>
+                            <p class="mb-2">
+                                <strong>Average Daily Reminders:</strong> {{ u.average_daily }}
+                                {% if u.average_daily > 5 %}
+                                    <span class="badge bg-warning text-dark ms-2" title="User qualifies for the premium promo!"><i class="bi bi-lightning-fill"></i> Avid User</span>
+                                {% endif %}
+                            </p>
+                            <p class="mb-3"><strong>Account Status:</strong> 
+                                {% if u.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Suspended</span>
+                                {% endif %}
+                            </p>
+
+                            <div class="mt-4 pt-3 border-top">
+                                <h6 class="fw-bold font-heading mb-3 text-danger"><i class="bi bi-shield-lock-fill me-2"></i>Admin Controls</h6>
+                                <form action="{% url 'admin_toggle_suspension' u.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if u.is_active %}
+                                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Are you sure you want to suspend this user account? They will be logged out and cannot log back in.');">
+                                            <i class="bi bi-slash-circle me-1"></i>Suspend Account
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-success text-white w-100">
+                                            <i class="bi bi-check-circle me-1"></i>Reactivate Account
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Premium opt details / Upgrade Menu -->
+                        <div class="col-md-6">
+                            {% if u.subscription_tier == 'premium' %}
+                                <div class="card p-3 border-success mb-3" style="border-radius: 12px; background-color: rgba(25, 135, 84, 0.05);">
+                                    <h6 class="fw-bold text-success font-heading mb-3"><i class="bi bi-star-fill me-2"></i>Premium Subscription Details</h6>
+                                    <p class="mb-2"><strong>Opted Date:</strong> {{ u.premium_opted_at|date:"Y-m-d H:i"|default:"Manual override" }}</p>
+                                    <p class="mb-2"><strong>Expiration Date:</strong> {{ u.premium_expires_at|date:"Y-m-d H:i" }}</p>
+                                    <p class="mb-2"><strong>Payment Method:</strong> {{ u.payment_method }}</p>
+                                    <p class="mb-2"><strong>Card Details:</strong> {{ u.card_details }}</p>
+                                    
+                                    <div class="mt-3 p-2 bg-success text-white text-center rounded fw-bold" style="font-size: 14px;">
+                                        <i class="bi bi-hourglass-split me-1"></i> Premium ends in {{ u.days_remaining }} days!
+                                    </div>
+                                    
+                                    <form action="{% url 'admin_downgrade_user' u.id %}" method="POST" class="mt-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Are you sure you want to downgrade this user to the Free (Basic) Tier?');">
+                                            <i class="bi bi-star-half me-1"></i>Downgrade to Basic Plan
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                            <div class="card p-3 border-primary-subtle" style="border-radius: 12px; background-color: rgba(37, 99, 235, 0.03);">
+                                <h6 class="fw-bold text-primary font-heading mb-3"><i class="bi bi-patch-plus-fill me-2"></i>{% if u.subscription_tier == 'premium' %}Extend Premium Plan{% else %}Upgrade to Premium{% endif %}</h6>
+                                <form action="{% url 'admin_upgrade_user' u.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Select Duration</label>
+                                        <select name="duration_type" class="form-select form-select-sm" required onchange="const customDiv = document.getElementById('custom-days-div-{{ u.id }}'); if(this.value === 'custom') { customDiv.classList.remove('d-none'); } else { customDiv.classList.add('d-none'); }">
+                                            <option value="1_month" selected>1 Month (30 Days)</option>
+                                            <option value="3_months">3 Months (90 Days)</option>
+                                            <option value="6_months">6 Months (180 Days)</option>
+                                            <option value="1_year">1 Year (365 Days)</option>
+                                            <option value="custom">Custom Days...</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 d-none" id="custom-days-div-{{ u.id }}">
+                                        <label class="form-label small fw-bold">Enter Number of Days</label>
+                                        <input type="number" name="custom_days" class="form-control form-control-sm" placeholder="e.g. 45" min="1" value="30">
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary-custom w-100 py-2">
+                                        <i class="bi bi-lightning-fill me-1"></i>{% if u.subscription_tier == 'premium' %}Extend Plan{% else %}Upgrade Account{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

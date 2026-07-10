@@ -9,21 +9,27 @@
 
         <div class="custom-card mb-4">
             <h5 class="fw-bold font-heading mb-4"><i class="bi bi-person-gear text-primary me-2"></i>Account Configurations</h5>
-            <form>
-                <div class="mb-3">
+            <form method="POST" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <div class="mb-3 text-start">
                     <label class="form-label fw-bold">Primary Notification Email</label>
                     <input type="email" class="form-control" value="{{ request.user.email }}" readonly>
                     <div class="form-text text-muted">To update, please contact your administrator.</div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4 text-start">
                     <label class="form-label fw-bold">Preferred Timezone</label>
-                    <select class="form-select" disabled>
-                        <option selected>Asia/Kolkata (GMT+05:30)</option>
-                        <option>UTC (GMT+00:00)</option>
-                        <option>America/New_York (GMT-05:00)</option>
+                    <select name="timezone" class="form-select">
+                        {% for tz in timezones %}
+                            <option value="{{ tz }}" {% if tz == profile.timezone %}selected{% endif %}>{{ tz }}</option>
+                        {% endfor %}
                     </select>
+                    <div class="form-text text-muted">Your dashboard times will adapt automatically.</div>
                 </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                    Save Account Settings
+                </button>
             </form>
         </div>
 
@@ -31,29 +37,87 @@
             <h5 class="fw-bold font-heading mb-3"><i class="bi bi-bell-fill text-warning me-2"></i>Notification Channels</h5>
             <p class="text-muted small mb-4">Select where you want to receive your scheduled task alerts.</p>
             
-            <div class="form-check form-switch mb-3">
+            <div class="form-check form-switch mb-3 text-start">
                 <input class="form-check-input" type="checkbox" role="switch" id="emailSwitch" checked disabled>
                 <label class="form-check-label fw-bold" for="emailSwitch">Inbound System Console & Email</label>
                 <div class="form-text text-muted small">Standard active channel for MVP debugging. Dispatches notifications to standard output log.</div>
             </div>
 
-            <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" role="switch" id="telegramSwitch" disabled>
-                <label class="form-check-label fw-bold text-muted" for="telegramSwitch">Telegram Channel Integration (Future Scope)</label>
-                <div class="form-text text-muted small">Receive automated alerts directly on Telegram via Recallify Bot.</div>
-            </div>
-
-            <div class="form-check form-switch mb-3">
+            <div class="form-check form-switch mb-3 text-start">
                 <input class="form-check-input" type="checkbox" role="switch" id="whatsappSwitch" disabled>
                 <label class="form-check-label fw-bold text-muted" for="whatsappSwitch">WhatsApp Notification Channel (Future Scope)</label>
                 <div class="form-text text-muted small">Direct WhatsApp delivery updates.</div>
             </div>
         </div>
 
-        <div class="custom-card border-danger bg-danger-subtle bg-opacity-10">
+        <div class="custom-card border-danger bg-danger-subtle bg-opacity-10 mb-4">
             <h5 class="fw-bold text-danger font-heading mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Danger Zone</h5>
             <p class="text-muted small">Once deleted, your account details and reminder schedules cannot be recovered.</p>
             <button class="btn btn-danger" disabled>Delete Account</button>
+        </div>
+
+        <!-- Legal Accordions -->
+        <div class="custom-card mt-4 text-start">
+            <h5 class="fw-bold font-heading mb-4"><i class="bi bi-file-earmark-text-fill text-muted me-2"></i>Legal & Agreements</h5>
+            <div class="accordion" id="legalAccordion">
+                
+                <!-- Terms of Service -->
+                <div class="accordion-item border rounded mb-3 bg-transparent">
+                    <h2 class="accordion-header" id="headingTerms">
+                        <button class="accordion-button collapsed fw-bold text-muted font-heading bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerms" aria-expanded="false" aria-controls="collapseTerms" style="outline: none; box-shadow: none;">
+                            <i class="bi bi-shield-check me-2 text-success"></i>Terms of Service
+                        </button>
+                    </h2>
+                    <div id="collapseTerms" class="accordion-collapse collapse" aria-labelledby="headingTerms" data-bs-parent="#legalAccordion">
+                        <div class="accordion-body text-muted small" style="font-size: 13px; line-height: 1.6;">
+                            <p class="fw-bold text-black dark-mode-text-white">Last Updated: July 2026</p>
+                            <p>Welcome to Recallify. By accessing our dashboard or connecting email integrations, you agree to comply with and be bound by the following terms and conditions of service.</p>
+                            
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">1. Service Subscription Tiers</h6>
+                            <ul>
+                                <li><strong>Self Managed (Free Tier):</strong> Restricted to a maximum of ten (10) active reminders. Natural Language Processing (NLP) email reminder extraction is subject to standard processing speed.</li>
+                                <li><strong>Fully Assisted (Premium Tier):</strong> Billed annually at ₹649/year (calculated monthly at ₹54/month). Subscribers receive unlimited active reminders, priority NLP contextual parsing, active AI chatbot channels, Google Calendar synchronizations, and direct alerts sent on WhatsApp.</li>
+                            </ul>
+                            
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">2. Account Activity & Suspension</h6>
+                            <p>We log security data including registration metadata, user email configurations, and the customer's last login IP address. The system logs user activity logs to detect loopback violations. The administration reserves the right to suspend or suspend user accounts temporarily or permanently for violations of scheduled email request protocols.</p>
+                            
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">3. Billing, Downgrades, & Cancellation</h6>
+                            <p>Premium memberships are billed on a recurring annual schedule of ₹649. Downgrading manually from the Fully Assisted plan back to Self Managed will take effect immediately. Access limits of 10 active reminders will enforce restrictions upon downgrading. Past payments are non-refundable.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Policy -->
+                <div class="accordion-item border rounded bg-transparent">
+                    <h2 class="accordion-header" id="headingPrivacy">
+                        <button class="accordion-button collapsed fw-bold text-muted font-heading bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrivacy" aria-expanded="false" aria-controls="collapsePrivacy" style="outline: none; box-shadow: none;">
+                            <i class="bi bi-eye-slash me-2 text-success"></i>Privacy Policy
+                        </button>
+                    </h2>
+                    <div id="collapsePrivacy" class="accordion-collapse collapse" aria-labelledby="headingPrivacy" data-bs-parent="#legalAccordion">
+                        <div class="accordion-body text-muted small" style="font-size: 13px; line-height: 1.6;">
+                            <p class="fw-bold text-black dark-mode-text-white">Last Updated: July 2026</p>
+                            <p>Recallify is committed to preserving the privacy of our scheduling users. This privacy policy describes the scope of metadata collected, logged, and parsed on the Recallify servers.</p>
+                            
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">1. Information We Collect</h6>
+                            <ul>
+                                <li><strong>Identity Data:</strong> Username, profile phone numbers, registered email addresses, and date joined metadata.</li>
+                                <li><strong>Device Log Data:</strong> We automatically record security access logging details including your last login IP address.</li>
+                                <li><strong>Activity Data:</strong> We monitor your connection activity status (active online indicator dot) by logging your last active request datetime stamp to power the real-time idle page updates.</li>
+                                <li><strong>Inbound Email Content:</strong> Inbound emails forwarded to our integration inbox are parsed using natural language models to extract event names, times, location forecasts, and checklist details. Raw email bodies are kept strictly inside private user tables and are not shared.</li>
+                            </ul>
+
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">2. Processing & NLP Models</h6>
+                            <p>Your emails are processed locally using zero-leak contextual parsing pipelines. Our weather forecasting seed algorithms are deterministic and do not share your coordinates or location logs with public weather networks.</p>
+                            
+                            <h6 class="fw-bold text-black dark-mode-text-white mt-3">3. Security & Admin Oversight</h6>
+                            <p>Registered administrators have access to user profile directory logs to upgrade plans or disable abusive accounts. Card details processed through the secure checkout portal are fully tokenized and stored only in masked format (e.g. Visa ending in 4111).</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

@@ -4,74 +4,35 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2 mb-0">Event Dashboard</h1>
+    <h1 class="h2 mb-0">{{ dashboard_heading }}</h1>
     <div>
         <button id="dashboardReloadBtn" class="btn btn-outline-secondary me-2" onclick="window.location.reload();" title="Refresh Dashboard & Poll Emails">
             <i class="bi bi-arrow-clockwise me-1"></i>Reload
         </button>
-        {% if request.user.is_superuser %}
-            <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#usersDirectoryModal">
-                <i class="bi bi-people-fill me-2"></i>Users Directory
-            </button>
-        {% endif %}
         <a href="{% url 'create_reminder' %}" class="btn btn-primary-custom">
             <i class="bi bi-plus-lg me-2"></i>New Reminder
         </a>
     </div>
 </div>
 
-<!-- Stats Row -->
-<div class="row g-4 mb-4">
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div>
-                <div class="text-muted small">Total Reminders</div>
-                <div class="h3 mb-0 mt-1 fw-bold">{{ total_reminders }}</div>
-            </div>
-            <div class="stat-icon bg-light text-dark">
-                <i class="bi bi-collection"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div>
-                <div class="text-muted small">Pending / Active</div>
-                <div class="h3 mb-0 mt-1 fw-bold text-warning">{{ pending_reminders }}</div>
-            </div>
-            <div class="stat-icon bg-warning-subtle text-warning">
-                <i class="bi bi-clock-history"></i>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="stat-card">
-            <div>
-                <div class="text-muted small">Sent / Dispatched</div>
-                <div class="h3 mb-0 mt-1 fw-bold text-success">{{ sent_reminders }}</div>
-            </div>
-            <div class="stat-icon bg-success-subtle text-success">
-                <i class="bi bi-check-circle"></i>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Events List -->
 <div class="events-table-card p-4">
-    <!-- Headers -->
-    <div class="table-header-row d-none d-md-flex mb-3 pb-2 border-bottom">
-        <div class="table-col-name text-uppercase font-heading">Event Name</div>
-        <div class="table-col-time text-uppercase font-heading">Date & Time</div>
-        <div class="table-col-source text-uppercase font-heading">Source</div>
-        <div class="table-col-desc text-uppercase font-heading">Description</div>
-        <div class="table-col-actions text-uppercase font-heading text-end">Actions</div>
+    <!-- Search / Filter -->
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div class="d-none d-md-flex gap-4 w-100">
+            <div class="table-col-name text-uppercase font-heading">Event Name</div>
+            <div class="table-col-time text-uppercase font-heading">Date & Time</div>
+            <div class="table-col-desc text-uppercase font-heading">Description</div>
+            <div class="table-col-actions text-uppercase font-heading text-end ms-auto" style="min-width: 140px;">Actions</div>
+        </div>
     </div>
 
     <!-- Items -->
     {% if reminders %}
         {% for reminder in reminders %}
-            <div class="event-item-card event-indicator-{{ reminder.status }}">
+            <div class="event-item-card event-indicator-{{ reminder.status }}" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#editReminderModal-{{ reminder.id }}">
                 <!-- Event Name -->
                 <div class="table-col-name">
                     <span class="event-name-text">{{ reminder.title }}</span>
@@ -83,10 +44,7 @@
                     <span>{{ reminder.scheduled_time|date:"Y-m-d H:i" }}</span>
                 </div>
                 
-                <!-- Source -->
-                <div class="table-col-source">
-                    <span class="badge bg-light text-dark border">{{ reminder.source }}</span>
-                </div>
+
                 
                 <!-- Description -->
                 <div class="table-col-desc pe-3">
@@ -94,21 +52,21 @@
                 </div>
                 
                 <!-- Actions -->
-                <div class="table-col-actions text-end">
+                <div class="table-col-actions text-end ms-auto" style="min-width: 140px;">
                     {% if reminder.status == 'confirmed' %}
                         <span class="badge-pill badge-confirmed me-2">Confirmed</span>
-                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete" onclick="event.stopPropagation();"><i class="bi bi-trash"></i> Delete</a>
                     {% elif reminder.status == 'upcoming' %}
                         <span class="badge-pill badge-upcoming me-2">Upcoming</span>
-                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete" onclick="event.stopPropagation();"><i class="bi bi-trash"></i> Delete</a>
                     {% elif reminder.status == 'pending' %}
-                        <button class="badge-pill bg-warning text-dark me-2 border-0 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmReminderModal-{{ reminder.id }}" title="Click to Confirm or Edit" style="cursor: pointer;">
+                        <button class="badge-pill bg-warning text-dark me-2 border-0 cursor-pointer" data-bs-toggle="modal" data-bs-target="#confirmReminderModal-{{ reminder.id }}" title="Click to Confirm or Edit" style="cursor: pointer;" onclick="event.stopPropagation();">
                             <i class="bi bi-exclamation-circle me-1"></i>Pending Confirmation
                         </button>
-                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Cancel</a>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete" onclick="event.stopPropagation();"><i class="bi bi-trash"></i> Cancel</a>
                     {% else %}
-                        <a href="{% url 'edit_reminder' reminder.id %}" class="action-link-edit"><i class="bi bi-pencil-square"></i> Edit</a>
-                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
+                        <a href="{% url 'edit_reminder' reminder.id %}" class="action-link-edit" onclick="event.stopPropagation();"><i class="bi bi-pencil-square"></i> Edit</a>
+                        <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete" onclick="event.stopPropagation();"><i class="bi bi-trash"></i> Delete</a>
                     {% endif %}
                 </div>
             </div>
@@ -122,116 +80,7 @@
     {% endif %}
 </div>
 
-{% if request.user.is_superuser %}
-<!-- Users Directory Modal -->
-<div class="modal fade" id="usersDirectoryModal" tabindex="-1" aria-labelledby="usersDirectoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
-            <div class="modal-header bg-success text-white py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
-                <h5 class="modal-title font-heading fw-bold" id="usersDirectoryModalLabel">
-                    <i class="bi bi-people-fill me-2"></i>Users Directory & Reminders
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <p class="text-muted small mb-4">Click a user's name to view their active reminder schedules in detail.</p>
-                <div class="table-responsive">
-                    <table class="table align-middle table-hover">
-                        <thead>
-                            <tr class="table-light">
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th class="text-center">Pending</th>
-                                <th class="text-center">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for u in users_list %}
-                                <tr>
-                                    <td>
-                                        <a href="#" class="text-decoration-none fw-bold text-success user-toggle-link" data-bs-toggle="collapse" data-bs-target="#user-reminders-{{ u.id }}" aria-expanded="false" style="font-size: 15px;">
-                                            {{ u.username }}
-                                            {% if u.profile.subscription_tier == 'premium' %}
-                                                <i class="bi bi-star-fill text-warning ms-1" title="Premium Tier User" style="text-shadow: 0 0 3px rgba(245, 158, 11, 0.4); font-size: 13px;"></i>
-                                            {% endif %}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted">{{ u.email|default:"No email address registered" }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <!-- Red circular button with number of pending reminders -->
-                                        <span class="badge-circle-red" style="width: 32px; height: 32px; border-radius: 50%; background-color: #dc3545; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: help; box-shadow: 0 2px 6px rgba(220, 53, 69, 0.25);" title="Pending Reminders: {{ u.pending_count }}">
-                                            {{ u.pending_count }}
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <!-- Grey circular button with total reminders set -->
-                                        <span class="badge-circle-grey" style="width: 32px; height: 32px; border-radius: 50%; background-color: #6c757d; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: help; box-shadow: 0 2px 6px rgba(108, 117, 125, 0.25);" title="Total Reminders: {{ u.total_count }}">
-                                            {{ u.total_count }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                <!-- Collapsible row for user's reminders details -->
-                                <tr class="collapse" id="user-reminders-{{ u.id }}">
-                                    <td colspan="4" class="p-3 bg-light">
-                                        <div class="card card-body border-0 shadow-sm p-3 bg-white" style="border-radius: 12px;">
-                                            <h6 class="fw-bold mb-3 text-success font-heading"><i class="bi bi-list-task me-2"></i>Active Reminders for {{ u.username }}</h6>
-                                            {% if u.reminders.all %}
-                                                <div class="table-responsive">
-                                                    <table class="table table-sm align-middle table-hover mb-0" style="font-size: 13.5px;">
-                                                        <thead>
-                                                            <tr class="table-light">
-                                                                <th>Event Name</th>
-                                                                <th>Date & Time</th>
-                                                                <th>Source</th>
-                                                                <th>Status</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {% for rem in u.reminders.all %}
-                                                                <tr>
-                                                                    <td><strong>{{ rem.title }}</strong></td>
-                                                                    <td class="text-muted"><i class="bi bi-clock me-1"></i>{{ rem.scheduled_time|date:"Y-m-d H:i" }}</td>
-                                                                    <td><span class="badge bg-light text-dark border">{{ rem.source }}</span></td>
-                                                                    <td>
-                                                                        {% if rem.status == 'confirmed' %}
-                                                                            <span class="badge bg-success-subtle text-success border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Confirmed</span>
-                                                                        {% elif rem.status == 'upcoming' %}
-                                                                            <span class="badge bg-warning-subtle text-warning border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Upcoming</span>
-                                                                        {% elif rem.status == 'pending' %}
-                                                                            <span class="badge bg-danger-subtle text-danger border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Pending Confirmation</span>
-                                                                        {% elif rem.status == 'sent' %}
-                                                                            <span class="badge bg-primary-subtle text-primary border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">Sent</span>
-                                                                        {% else %}
-                                                                            <span class="badge bg-secondary-subtle text-secondary border px-2 py-1" style="font-size: 11px; border-radius: 50px; text-transform: capitalize;">{{ rem.status }}</span>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            {% else %}
-                                                <div class="text-center py-2 text-muted small">No reminders set currently.</div>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<!-- Modals for Confirming/Editing Pending Reminders (Rendered at Body Root to Avoid flex/column jitter layout bugs) -->
+<!-- Modals for Confirming/Editing Pending Reminders -->
 {% if reminders %}
     {% for reminder in reminders %}
         {% if reminder.status == 'pending' %}
@@ -271,6 +120,49 @@
                 </div>
             </div>
         {% endif %}
+
+        <!-- Detailed View/Edit Modal for Clickable Cards -->
+        <div class="modal fade" id="editReminderModal-{{ reminder.id }}" tabindex="-1" aria-labelledby="editReminderModalLabel-{{ reminder.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+                    <div class="modal-header bg-primary text-white py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                        <h5 class="modal-title font-heading fw-bold" id="editReminderModalLabel-{{ reminder.id }}">
+                            <i class="bi bi-pencil-square me-2"></i>Reminder Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{% url 'edit_reminder' reminder.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="modal-body p-4 text-start">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Reminder Name</label>
+                                <input type="text" name="title" class="form-control" value="{{ reminder.title }}" required placeholder="e.g. Flight to London">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Description / Action checklist</label>
+                                <textarea name="description" class="form-control" rows="4" placeholder="Reminder points/checklist items...">{{ reminder.description|default:"" }}</textarea>
+                                <div class="form-text small text-muted">Each sentence is automatically formatted into clean bullet checklist tasks.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Scheduled Date & Time</label>
+                                <input type="datetime-local" name="scheduled_time" class="form-control" value="{{ reminder.scheduled_time|date:'Y-m-d\TH:i' }}" required>
+                            </div>
+
+                            <div class="mb-1 text-muted small">
+                                <strong>Status:</strong> <span class="text-capitalize">{{ reminder.status }}</span> | <strong>Source:</strong> {{ reminder.source }}
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                            <a href="{% url 'delete_reminder' reminder.id %}" class="btn btn-danger px-3" style="border-radius: 8px;">Delete Reminder</a>
+                            <button type="submit" class="btn btn-primary-custom px-4" style="border-radius: 8px;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     {% endfor %}
 {% endif %}
 {% endblock %}

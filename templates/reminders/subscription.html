@@ -1,0 +1,116 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Manage Subscription - Recallify{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold font-heading mb-2">Recallify Pricing Plans</h1>
+        <p class="text-muted-custom fs-5">Choose the plan that fits your scheduling workflow. Unlock unlimited reminders today.</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Free Tier Card -->
+        <div class="col-md-4 align-self-center">
+            <div class="custom-card h-100 d-flex flex-column p-4 border {% if profile.subscription_tier == 'free' %}border-primary-subtle shadow-sm{% endif %}" style="position: relative; border-radius: 16px; transition: transform 0.3s, box-shadow 0.3s; transform: scale(0.9); opacity: 0.85;">
+                
+                <div class="mb-4">
+                    <h3 class="fw-bold font-heading mb-1 text-capitalize">Self Managed</h3>
+                    <p class="text-muted small" style="font-size: 13px; font-weight: 500;">the ones who manage their time</p>
+                    <div class="d-flex align-items-baseline my-3">
+                        <span class="display-5 fw-extrabold font-heading">$0</span>
+                        <span class="text-muted ms-2">/ month</span>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled my-4 flex-grow-1">
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>Limit of <strong>10 active</strong> reminders</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>NLP email reminder parsing</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>Standard dashboard views</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center text-muted">
+                        <i class="bi bi-dash-circle text-muted me-2.5" style="font-size: 16px;"></i>
+                        <span>No priority scheduling</span>
+                    </li>
+                </ul>
+
+                {% if profile.subscription_tier == 'free' %}
+                    <button class="btn btn-outline-secondary w-100 py-2.5 mt-auto" disabled style="border-radius: 8px; font-weight: 600;">Current Plan</button>
+                {% else %}
+                    <form action="{% url 'subscription' %}" method="POST" class="mt-auto">
+                        {% csrf_token %}
+                        <input type="hidden" name="tier" value="free">
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2.5" style="border-radius: 8px; font-weight: 600;" onclick="return confirm('Are you sure you want to downgrade? Your reminder limits will be restricted to 10.');">
+                            Downgrade to Free
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Premium Tier Card -->
+        <div class="col-md-5 align-self-center">
+            <div class="custom-card h-100 d-flex flex-column p-4 border {% if profile.subscription_tier == 'premium' %}border-success shadow-lg{% else %}border-primary-subtle{% endif %}" style="position: relative; border-radius: 16px; transition: transform 0.3s, box-shadow 0.3s; background: linear-gradient(145deg, var(--card-bg), var(--card-bg-secondary)); transform: scale(1.04); border-width: 2px;">
+                
+                <div class="mb-4">
+                    <h3 class="fw-bold font-heading mb-1 text-capitalize">Fully Assisted</h3>
+                    <p class="text-muted small mb-1 fw-bold" style="font-size: 13px;">let us manage your time, while you use it</p>
+                    <p class="text-muted small mb-3" style="font-size: 11.5px; opacity: 0.85; line-height: 1.4;">For individuals who value absolute scheduling freedom. Enjoy automated WhatsApp reminders, active AI chatbots, and Google Calendar syncing. If you are serious about how you manage your time, 49 Rs per month is nothing for the time you will save.</p>
+                    <div class="d-flex align-items-baseline my-2 flex-wrap gap-1">
+                        <span class="display-6 fw-extrabold font-heading text-success">₹649</span>
+                        <span class="text-muted ms-1" style="font-size: 14px;">/ year</span>
+                        <span class="text-muted ms-2" style="font-size: 12px; font-weight: 500;">(or <strong class="text-success">₹54</strong>/month billed annually)</span>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled my-4 flex-grow-1">
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span><strong>Unlimited</strong> active reminders</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>All-time on-call assistance</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>Active AI chatbot integration</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>WhatsApp and Google Calendar integration</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>Direct reminders on WhatsApp</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>Advanced contextual NLP parsing</span>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                        <span>AI intelligent task checklists</span>
+                    </li>
+                </ul>
+
+                {% if profile.subscription_tier == 'premium' %}
+                    <button class="btn btn-outline-secondary w-100 py-2.5 mt-auto" disabled style="border-radius: 8px; font-weight: 600;">Current Plan</button>
+                {% else %}
+                    <a href="{% url 'checkout' %}" class="btn btn-success w-100 py-2.5 text-white mt-auto" style="border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none;">
+                        Upgrade to Premium
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

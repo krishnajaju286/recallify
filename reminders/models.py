@@ -11,6 +11,19 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     subscription_tier = models.CharField(max_length=20, choices=SUBSCRIPTION_CHOICES, default='free')
     reminder_limit = models.IntegerField(default=10) # Max active reminders for free tier
+    
+    # Premium Billing / Admin requirements
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    premium_opted_at = models.DateTimeField(blank=True, null=True)
+    premium_expires_at = models.DateTimeField(blank=True, null=True)
+    payment_method = models.CharField(max_length=50, default='Credit Card', blank=True, null=True)
+    card_details = models.CharField(max_length=50, default='Visa ending in 4242', blank=True, null=True)
+    expiry_warning_sent = models.BooleanField(default=False)
+    offer_sent = models.BooleanField(default=False)
+    timezone = models.CharField(max_length=100, default='Asia/Kolkata')
+    last_login_ip = models.CharField(max_length=50, blank=True, null=True)
+    last_active_at = models.DateTimeField(blank=True, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

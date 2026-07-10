@@ -1,0 +1,125 @@
+{% extends 'reminders/base.html' %}
+
+{% block title %}Checkout - Recallify Premium{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Checkout Header -->
+            <div class="text-center mb-4">
+                <h2 class="fw-bold font-heading mb-2">Upgrade to Recallify Premium</h2>
+                <p class="text-muted">Complete your transaction securely to unlock unlimited reminders, contextual NLP parsing, and AI check-lists.</p>
+            </div>
+
+            <!-- Checkout Form Card -->
+            <div class="events-table-card p-4 shadow-lg" style="border-radius: 16px;">
+                <h5 class="fw-bold font-heading mb-4 text-primary"><i class="bi bi-shield-lock-fill me-2"></i>Secure Checkout</h5>
+                
+                <!-- Pricing Summary -->
+                <div class="p-3 mb-4 rounded bg-light border text-start" style="font-size: 14.5px;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Recallify Premium (Annual Subscription)</span>
+                        <strong>₹649</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-muted">
+                        <span>Taxes (0%)</span>
+                        <span>$0.00</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between fw-bold text-success" style="font-size: 16px;">
+                        <span>Total Due</span>
+                        <span>₹649</span>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <form method="POST" action="{% url 'checkout' %}" id="paymentForm">
+                    {% csrf_token %}
+                    
+                    <!-- Cardholder Name -->
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold">Cardholder Name</label>
+                        <input type="text" name="cardholder_name" class="form-control" placeholder="John Doe" required>
+                    </div>
+
+                    <!-- Card Number -->
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold">Card Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-credit-card-2-front-fill"></i></span>
+                            <input type="text" name="card_number" id="cardNumberInput" class="form-control" placeholder="4111 2222 3333 4444" maxlength="19" required autocomplete="cc-number">
+                        </div>
+                        <div class="form-text small text-muted">Enter a valid 15-16 digit card number.</div>
+                    </div>
+
+                    <!-- Expiry & CVV -->
+                    <div class="row mb-4">
+                        <div class="col-6 text-start">
+                            <label class="form-label small fw-bold">Expiry Date</label>
+                            <input type="text" name="expiry_date" id="expiryInput" class="form-control" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="col-6 text-start">
+                            <label class="form-label small fw-bold">CVV</label>
+                            <input type="password" name="cvv" id="cvvInput" class="form-control" placeholder="123" maxlength="4" required autocomplete="cc-csc">
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-success w-100 py-2.5 text-white fw-bold" style="border-radius: 8px;">
+                        <i class="bi bi-lock-fill me-2"></i>Pay & Subscribe (₹649)
+                    </button>
+                    
+                    <div class="text-center mt-3 small text-muted">
+                        <i class="bi bi-lock-fill me-1 text-success"></i> 256-bit SSL encrypted connection
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Format card number with spaces every 4 digits
+    const cardNumber = document.getElementById('cardNumberInput');
+    cardNumber.addEventListener('input', function (e) {
+        let target = e.target;
+        let position = target.selectionEnd;
+        let length = target.value.length;
+        
+        let value = target.value.replace(/\D/g, '');
+        let formatted = '';
+        
+        for (let i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) {
+                formatted += ' ';
+            }
+            formatted += value[i];
+        }
+        
+        target.value = formatted;
+        
+        // Adjust cursor position
+        if (target.selectionEnd !== length) {
+            target.selectionEnd = position + (target.value.length - length);
+        }
+    });
+
+    // Format expiry date with slash (MM/YY)
+    const expiry = document.getElementById('expiryInput');
+    expiry.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 2) {
+            e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        } else {
+            e.target.value = value;
+        }
+    });
+
+    // Accept only digits for CVV
+    const cvv = document.getElementById('cvvInput');
+    cvv.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+</script>
+{% endblock %}

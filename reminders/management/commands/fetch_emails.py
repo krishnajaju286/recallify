@@ -113,69 +113,84 @@ class Command(BaseCommand):
                     mail.store(mail_id, '+FLAGS', '\\Seen')
                     continue
                 
-                # 7. Check if this is a Yes/No response to a pending reminder
+                # 7. Check if this is a response to a pending reminder
                 reply_body = extract_email_reply_text(body)
                 clean_body = reply_body.lower().strip().strip(',.?!;:-')
                 clean_subject = subject.lower().strip()
                 
-                is_yes = bool(re.match(r'^(yes|confirm|y\b)', clean_body)) or clean_subject == 'yes'
                 is_no = bool(re.match(r'^(no|cancel|n\b)', clean_body)) or clean_subject == 'no'
                 
-                if is_yes or is_no:
-                    # Find the latest pending reminder for this user
-                    pending_reminder = Reminder.objects.filter(user=user, status='pending').order_by('-created_at').first()
-                    if pending_reminder:
-                        if is_yes:
-                            pending_reminder.status = 'confirmed'
-                            pending_reminder.save()
-                            
-                            ActivityLog.objects.create(
-                                user=user,
-                                action_type='Email Confirmation Received',
-                                details=f"User replied YES via email. Confirmed reminder: '{pending_reminder.title}'."
-                            )
-                            
-                            # Send real confirmation notification
-                            send_mail(
-                                subject=f"Scheduled: {pending_reminder.title}",
-                                message=(
-                                    f"Hello {user.username},\n\n"
-                                    f"Thank you! Your reminder '{pending_reminder.title}' has been successfully confirmed and scheduled.\n"
-                                    f"Date & Time: {pending_reminder.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}\n\n"
-                                    f"Best regards,\nRecallify Automated Scheduler"
-                                ),
-                                from_email=settings.EMAIL_HOST_USER,
-                                recipient_list=[sender_email],
-                                fail_silently=True
-                            )
-                            self.stdout.write(self.style.SUCCESS(f"Confirmed pending reminder: '{pending_reminder.title}'"))
-                        else:
-                            pending_reminder.status = 'failed'
-                            pending_reminder.save()
-                            
-                            ActivityLog.objects.create(
-                                user=user,
-                                action_type='Email Confirmation Received',
-                                details=f"User replied NO via email. Cancelled reminder: '{pending_reminder.title}'."
-                            )
-                            
-                            # Send cancellation confirmation
-                            send_mail(
-                                subject=f"Cancelled: {pending_reminder.title}",
-                                message=(
-                                    f"Hello {user.username},\n\n"
-                                    f"We have cancelled your reminder request for '{pending_reminder.title}' as requested.\n\n"
-                                    f"Best regards,\nRecallify Automated Scheduler"
-                                ),
-                                from_email=settings.EMAIL_HOST_USER,
-                                recipient_list=[sender_email],
-                                fail_silently=True
-                            )
-                            self.stdout.write(self.style.SUCCESS(f"Cancelled pending reminder: '{pending_reminder.title}'"))
+                # Check if there is an active pending reminder for this user
+                pending_reminder = Reminder.objects.filter(user=user, status='pending').order_by('-created_at').first()
+                
+                if pending_reminder:
+                    if is_no:
+                        pending_reminder.status = 'failed'
+                        pending_reminder.save()
+                        ActivityLog.objects.create(
+                            user=user,
+                            action_type='Email Confirmation Received',
+                            details=f"User replied NO via email. Cancelled reminder: '{pending_reminder.title}'."
+                        )
+                        self.stdout.write(self.style.SUCCESS(f"Cancelled pending reminder: '{pending_reminder.title}'"))
                     else:
-                        self.stdout.write(self.style.ERROR("Yes/No response received but no pending reminder exists."))
+                        # User confirmed (either simple YES or YES with changes/updates)
+                        reply_has_explicit_ampm = bool(re.search(r'\b\d{1,2}(?::\d{2})?\s*(am|pm)\b', clean_body))
+                        reply_has_explicit_24h = bool(re.search(r'\b(?:[01]\d|2[0-3]):[0-5]\d\b', clean_body))
+                        reply_has_ambiguous_time = bool(re.search(r'\b(?:at|around|@|by)\s*\d{1,2}(?::\d{2})?\b', clean_body))
+                        reply_has_time = reply_has_explicit_ampm or reply_has_explicit_24h or reply_has_ambiguous_time
                         
-                    # Mark as read
+                        reply_has_date = any(kw in clean_body for kw in [
+                            "tomorrow", "today", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "weekend"
+                        ]) or bool(re.search(r'(\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4})', clean_body))
+                        
+                        action_details = f"User confirmed pending reminder via email: '{pending_reminder.title}'."
+                        
+                        if reply_has_time or reply_has_date:
+                            parsed_reply = parse_email_reminder(subject, reply_body)
+                            
+                            # Merge changes into existing pending reminder
+                            current_dt = timezone.make_naive(pending_reminder.scheduled_time, timezone.get_current_timezone())
+                            parsed_dt = timezone.make_naive(parsed_reply['scheduled_time'], timezone.get_current_timezone())
+                            
+                            new_date = parsed_dt.date() if reply_has_date else current_dt.date()
+                            new_time = parsed_dt.time() if reply_has_time else current_dt.time()
+                            
+                            new_datetime = datetime.datetime.combine(new_date, new_time)
+                            pending_reminder.scheduled_time = timezone.make_aware(new_datetime, timezone.get_current_timezone())
+                            
+                            # If they changed the text topic, update title too
+                            parsed_title = parsed_reply['title']
+                            if parsed_title and parsed_title.lower() not in ["email reminder", "yes", "confirm", "y", "re", "fw"]:
+                                pending_reminder.title = parsed_title
+                                
+                            action_details = f"User confirmed with changes: '{pending_reminder.title}' (scheduled: {pending_reminder.scheduled_time})."
+                            
+                        pending_reminder.status = 'confirmed'
+                        pending_reminder.save()
+                        
+                        ActivityLog.objects.create(
+                            user=user,
+                            action_type='Email Confirmation Received',
+                            details=action_details
+                        )
+                        
+                        # Send real confirmation notification
+                        send_mail(
+                            subject=f"Scheduled: {pending_reminder.title}",
+                            message=(
+                                f"Hello {user.username},\n\n"
+                                f"Thank you! Your reminder '{pending_reminder.title}' has been successfully confirmed and scheduled.\n"
+                                f"Date & Time: {pending_reminder.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}\n\n"
+                                f"Best regards,\nRecallify Automated Scheduler"
+                            ),
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[sender_email],
+                            fail_silently=True
+                        )
+                        self.stdout.write(self.style.SUCCESS(f"Confirmed pending reminder with changes: '{pending_reminder.title}'"))
+                        
+                    # Mark as read and continue so it doesn't fall through to parse as new reminder
                     mail.store(mail_id, '+FLAGS', '\\Seen')
                     continue
                 
@@ -186,18 +201,6 @@ class Command(BaseCommand):
                     active_count = Reminder.objects.filter(user=user, status__in=['pending', 'upcoming', 'confirmed']).count()
                     if active_count >= profile.reminder_limit:
                         self.stdout.write(self.style.ERROR(f"User {user.username} has reached reminder limit (10). Rejecting email."))
-                        send_mail(
-                            subject="Recallify - Reminder Limit Reached",
-                            message=(
-                                f"Hello {user.username},\n\n"
-                                f"You have reached your Free Tier reminder limit (10 active reminders).\n"
-                                f"Upgrade to Premium on the Recallify Web Dashboard for unlimited reminder creation.\n\n"
-                                f"Best regards,\nRecallify Automated Scheduler"
-                            ),
-                            from_email=settings.EMAIL_HOST_USER,
-                            recipient_list=[sender_email],
-                            fail_silently=True
-                        )
                         mail.store(mail_id, '+FLAGS', '\\Seen')
                         continue
                 
@@ -263,20 +266,6 @@ class Command(BaseCommand):
                         details=f"Email received & parsed. Created reminder: '{reminder.title}' scheduled for {reminder.scheduled_time}."
                     )
                     
-                    # Send real success notification
-                    send_mail(
-                        subject=f"Scheduled: {reminder.title}",
-                        message=(
-                            f"Hello {user.username},\n\n"
-                            f"Your email reminder has been successfully received and scheduled!\n"
-                            f"Event: {reminder.title}\n"
-                            f"Scheduled Time: {reminder.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}\n\n"
-                            f"Best regards,\nRecallify Automated Scheduler"
-                        ),
-                        from_email=settings.EMAIL_HOST_USER,
-                        recipient_list=[sender_email],
-                        fail_silently=True
-                    )
                     self.stdout.write(self.style.SUCCESS(f"Created confirmed reminder: '{reminder.title}'"))
                 
                 # Mark email as read on server

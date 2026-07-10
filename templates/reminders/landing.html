@@ -12,7 +12,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Custom Landing CSS -->
-    <link href="{% static 'css/landing.css' %}?v=1.9" rel="stylesheet">
+    <link href="{% static 'css/landing.css' %}?v=2.4" rel="stylesheet">
     <script>
         (function() {
             const theme = localStorage.getItem('theme') || 'light';
@@ -159,7 +159,7 @@
     </section>
 
     <!-- About Section (Mandate: About your project) -->
-    <section id="about" class="landing-section about-section">
+    <section id="about" class="landing-section about-section reveal-on-scroll">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-5 mb-5 mb-lg-0">
@@ -320,36 +320,73 @@
             <h2 class="section-title mt-2">Simple, Transparent Pricing</h2>
             <p class="section-desc">Get started for free or unlock unlimited reminders with Premium.</p>
             
-            <div class="row justify-content-center mt-4">
-                <div class="col-md-5 mb-4">
-                    <div class="feature-card text-center d-flex flex-column justify-content-between">
+            <div class="row justify-content-center mt-4 g-4">
+                <!-- Free Tier Card (Self Managed) -->
+                <div class="col-md-4 align-self-center">
+                    <div class="feature-card text-center d-flex flex-column justify-content-between p-4 border" style="border-radius: 16px; transition: transform 0.3s, box-shadow 0.3s; transform: scale(0.9); opacity: 0.85;">
                         <div>
-                            <h4 class="mb-2">Free Tier</h4>
-                            <h2 class="fw-bold mb-4 font-heading text-dark">$0 <span class="fs-6 text-muted">/ forever</span></h2>
-                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 250px;">
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Up to 10 active reminders</li>
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Email simulator testing</li>
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Activity logs dashboard</li>
-                                <li class="mb-2 text-muted"><i class="bi bi-x-circle-fill text-danger me-2"></i>Unlimited reminders</li>
+                            <h3 class="fw-bold font-heading mb-1 text-capitalize">Self Managed</h3>
+                            <p class="text-muted small" style="font-size: 13px; font-weight: 500;">the ones who manage their time</p>
+                            <h2 class="fw-bold my-4 font-heading text-dark">$0 <span class="fs-6 text-muted">/ month</span></h2>
+                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 250px; font-size: 14px;">
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>Limit of <strong>10 active</strong> reminders</span>
+                                </li>
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>NLP email reminder parsing</span>
+                                </li>
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>Standard dashboard views</span>
+                                </li>
+                                <li class="mb-3 d-flex align-items-center text-muted">
+                                    <i class="bi bi-dash-circle text-muted me-2.5" style="font-size: 16px;"></i>
+                                    <span>No priority scheduling</span>
+                                </li>
                             </ul>
                         </div>
-                        <a href="{% url 'signup' %}" class="btn btn-outline-success py-2.5 w-100">Sign Up Free</a>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-success py-2.5 w-100" style="border-radius: 8px; font-weight: 600;">Sign Up Free</a>
                     </div>
                 </div>
                 
-                <div class="col-md-5 mb-4">
-                    <div class="feature-card text-center border-success d-flex flex-column justify-content-between" style="box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);">
+                <!-- Premium Tier Card (Fully Assisted) -->
+                <div class="col-md-5 align-self-center">
+                    <div class="feature-card text-center border-success d-flex flex-column justify-content-between p-4" style="box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15); border-radius: 16px; transition: transform 0.3s, box-shadow 0.3s; transform: scale(1.04); border-width: 2px;">
                         <div>
-                            <h4 class="mb-2">Premium Tier</h4>
-                            <h2 class="fw-bold mb-4 font-heading text-success">$5 <span class="fs-6 text-muted">/ month</span></h2>
-                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 250px;">
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Unlimited active reminders</li>
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Priority email parsing</li>
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Instant push notifications</li>
-                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Dedicated support queue</li>
+                            <h3 class="fw-bold font-heading mb-1 text-capitalize text-success">Fully Assisted</h3>
+                            <p class="text-muted small mb-1 fw-bold" style="font-size: 13px;">let us manage your time, while you use it</p>
+                            <p class="text-muted small mb-4" style="font-size: 11.5px; opacity: 0.85; line-height: 1.4;">For individuals who value absolute scheduling freedom. Enjoy automated WhatsApp reminders, active AI chatbots, and Google Calendar syncing. If you are serious about how you manage your time, 49 Rs per month is nothing for the time you will save.</p>
+                            <div class="d-flex align-items-baseline justify-content-center my-3 flex-wrap gap-1">
+                                <span class="display-6 fw-extrabold font-heading text-success">₹649</span>
+                                <span class="text-muted ms-1" style="font-size: 14px;">/ year</span>
+                                <span class="text-muted ms-2" style="font-size: 12px; font-weight: 500;">(or <strong class="text-success">₹54</strong>/month billed annually)</span>
+                            </div>
+                            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 280px; font-size: 14px;">
+                                <li class="mb-2 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span><strong>Unlimited</strong> active reminders</span>
+                                </li>
+                                <li class="mb-2 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>All-time on-call assistance</span>
+                                </li>
+                                <li class="mb-2 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>Active AI chatbot integration</span>
+                                </li>
+                                <li class="mb-2 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>WhatsApp and Google Calendar integration</span>
+                                </li>
+                                <li class="mb-2 d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2.5" style="font-size: 16px;"></i>
+                                    <span>Direct reminders on WhatsApp</span>
+                                </li>
                             </ul>
                         </div>
-                        <a href="{% url 'signup' %}" class="btn btn-success py-2.5 w-100">Upgrade to Premium</a>
+                        <a href="{% url 'signup' %}" class="btn btn-success py-2.5 w-100 text-white" style="border-radius: 8px; font-weight: 600;">Upgrade to Premium</a>
                     </div>
                 </div>
             </div>
@@ -425,9 +462,8 @@
                 <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                     <h5 class="footer-heading">Legal</h5>
                     <ul class="footer-links-list">
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Cookie Guidelines</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#legalModal" data-legal-tab="terms">Terms of Service</a></li>
+                        <li><a href="#" data-bs-toggle="modal" data-bs-target="#legalModal" data-legal-tab="privacy">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -443,23 +479,168 @@
 
     <!-- Video Modal -->
     <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark border-0">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title text-white font-heading" id="videoModalLabel">Recallify Product Walkthrough</h5>
+                <div class="modal-header border-0 pb-2">
+                    <h5 class="modal-title text-white font-heading fw-bold" id="videoModalLabel"><i class="bi bi-play-circle-fill text-success me-2"></i>Recallify Walkthrough Demo</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body p-0 pt-3">
-                    <div class="ratio ratio-16x9">
-                        <!-- We embed a mock video placeholder/instruction video or a placeholder frame -->
-                        <div class="d-flex align-items-center justify-content-center bg-black text-white p-5 flex-column">
-                            <i class="bi bi-play-btn-fill text-success display-1 mb-4"></i>
-                            <h3 class="font-heading fw-bold">Demo Walkthrough Video</h3>
-                            <p class="text-muted text-center max-width-500">
-                                This 1-minute demo walks you through forwarding a confirmation email to Recallify and seeing it instantly populate your Dashboard calendar agenda.
-                            </p>
-                            <button class="btn btn-success px-4 py-2 mt-3" data-bs-dismiss="modal">Close Walkthrough</button>
+                <div class="modal-body p-3">
+                    <div id="demoVideoPlayer" class="demo-player-container text-white bg-black rounded p-4 overflow-hidden" style="position: relative; height: 360px; font-family: 'Inter', sans-serif; border: 1px solid #334155; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                        <!-- Step 1: Inbound Email -->
+                        <div class="demo-slide" id="demoSlide1" style="display: block;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                                <span class="badge bg-danger"><i class="bi bi-envelope-fill me-1"></i>Step 1: Forward Email</span>
+                                <small class="text-muted">From: tickets@parisair.com</small>
+                            </div>
+                            <div class="card bg-dark border-secondary p-3 text-light text-start">
+                                <p class="mb-1 text-success font-heading fw-bold" style="font-size: 14px;">Subject: Booking Confirmation #749</p>
+                                <p class="mb-0 text-muted" style="font-size: 12px; line-height: 1.4;">Dear Traveler, your flight to Paris is scheduled on 2026-07-15 at 10:00 AM. Boarding starts at 9:15 AM at Gate 4B.</p>
+                            </div>
+                            <div class="text-center mt-4 text-success animate-pulse small" style="font-weight: 500;">
+                                <i class="bi bi-cloud-arrow-up-fill me-1"></i>Forwarding to Recallify inbox...
+                            </div>
                         </div>
+
+                        <!-- Step 2: NLP AI Parsing -->
+                        <div class="demo-slide" id="demoSlide2" style="display: none;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                                <span class="badge bg-warning text-dark"><i class="bi bi-cpu-fill me-1"></i>Step 2: AI Parsing</span>
+                                <small class="text-muted">NLP extraction model</small>
+                            </div>
+                            <div class="bg-dark border border-warning rounded p-3 text-light text-start" style="position: relative;">
+                                <div class="scanner-bar" style="position: absolute; height: 3px; left: 0; right: 0; background: #ffc107; animation: scan 1.5s infinite;"></div>
+                                <p class="mb-2 font-heading fw-bold text-warning" style="font-size: 13px;">Extracted Event Metadata:</p>
+                                <div style="font-size: 12px; line-height: 1.6;">
+                                    <div>📌 <strong>Event:</strong> Flight to Paris</div>
+                                    <div>⏰ <strong>Time:</strong> 2026-07-15 10:00 AM</div>
+                                    <div>📝 <strong>Checklist:</strong> Boarding starts at 9:15 AM</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3 text-warning small animate-pulse" style="font-weight: 500;">
+                                <i class="bi bi-gear-wide-connected me-1"></i>Running model classification...
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Dashboard Insertion -->
+                        <div class="demo-slide" id="demoSlide3" style="display: none;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                                <span class="badge bg-success"><i class="bi bi-speedometer2 me-1"></i>Step 3: Saved to Agenda</span>
+                                <small class="text-muted">Dashboard active view</small>
+                            </div>
+                            <div class="card bg-success bg-opacity-10 border-success p-3 text-light text-start">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-success" style="font-size: 10px;">Confirmed</span>
+                                    <small class="text-success"><i class="bi bi-clock me-1"></i>2026-07-15, 10:00 AM</small>
+                                </div>
+                                <h6 class="fw-bold text-white mb-1">Flight to Paris</h6>
+                                <p class="text-muted small mb-0" style="font-size: 11.5px; line-height: 1.4;">Boarding starts at 9:15 AM at Gate 4B. Forecast: Mild weather advise.</p>
+                            </div>
+                            <div class="text-center mt-4 text-success small" style="font-weight: 500;">
+                                <i class="bi bi-check-circle-fill me-1"></i>Successfully integrated to dashboard calendar!
+                            </div>
+                        </div>
+
+                        <!-- Step 4: WhatsApp Alerting -->
+                        <div class="demo-slide" id="demoSlide4" style="display: none;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
+                                <span class="badge bg-primary"><i class="bi bi-whatsapp me-1"></i>Step 4: Dispatch Alert</span>
+                                <small class="text-muted">WhatsApp integration</small>
+                            </div>
+                            <div class="bg-dark p-3 rounded text-start mx-auto border border-primary" style="max-width: 320px;">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div class="bg-success rounded-circle p-1 text-white d-flex align-items-center justify-content-center" style="width: 22px; height: 22px;"><i class="bi bi-whatsapp" style="font-size: 11px;"></i></div>
+                                    <strong class="text-white" style="font-size: 12px;">Recallify Assistant</strong>
+                                </div>
+                                <div class="bg-success bg-opacity-25 rounded p-2 text-white" style="border-radius: 8px 8px 8px 0px !important; font-size: 11.5px; line-height: 1.4;">
+                                    💬 Event: <strong>Flight to Paris</strong> starts at 10:00 AM. Boarding starts at 9:15 AM.
+                                </div>
+                            </div>
+                            <div class="text-center mt-3 text-primary small animate-pulse" style="font-weight: 500;">
+                                <i class="bi bi-bell-fill me-1"></i>Direct alert dispatched successfully!
+                            </div>
+                        </div>
+
+                        <!-- Control Indicators -->
+                        <div class="d-flex justify-content-center gap-2 mt-4" style="position: absolute; bottom: 15px; left: 0; right: 0;">
+                            <span class="indicator-dot active" data-slide="1" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; opacity: 0.8; transition: all 0.3s; cursor: pointer;"></span>
+                            <span class="indicator-dot" data-slide="2" style="width: 8px; height: 8px; border-radius: 50%; background: #555; opacity: 0.8; transition: all 0.3s; cursor: pointer;"></span>
+                            <span class="indicator-dot" data-slide="3" style="width: 8px; height: 8px; border-radius: 50%; background: #555; opacity: 0.8; transition: all 0.3s; cursor: pointer;"></span>
+                            <span class="indicator-dot" data-slide="4" style="width: 8px; height: 8px; border-radius: 50%; background: #555; opacity: 0.8; transition: all 0.3s; cursor: pointer;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal Modal (Terms of Service / Privacy Policy) -->
+    <div class="modal fade" id="legalModal" tabindex="-1" aria-labelledby="legalModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark border-0 text-white">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title font-heading fw-bold text-white" id="legalModalLabel"><i class="bi bi-file-earmark-text text-success me-2"></i>Legal Documents & Policy</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="accordion" id="landingLegalAccordion">
+                        
+                        <!-- Terms of Service -->
+                        <div class="accordion-item border rounded mb-3 bg-transparent border-secondary">
+                            <h2 class="accordion-header" id="landingHeadingTerms">
+                                <button class="accordion-button collapsed fw-bold text-white font-heading bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#landingCollapseTerms" aria-expanded="false" aria-controls="landingCollapseTerms" style="outline: none; box-shadow: none;">
+                                    <i class="bi bi-shield-check me-2 text-success"></i>Terms of Service
+                                </button>
+                            </h2>
+                            <div id="landingCollapseTerms" class="accordion-collapse collapse" aria-labelledby="landingHeadingTerms" data-bs-parent="#landingLegalAccordion">
+                                <div class="accordion-body text-light small" style="font-size: 13px; line-height: 1.6; opacity: 0.85;">
+                                    <p class="fw-bold text-white">Last Updated: July 2026</p>
+                                    <p>Welcome to Recallify. By accessing our dashboard or connecting email integrations, you agree to comply with and be bound by the following terms and conditions of service.</p>
+                                    
+                                    <h6 class="fw-bold text-white mt-3">1. Service Subscription Tiers</h6>
+                                    <ul>
+                                        <li><strong>Self Managed (Free Tier):</strong> Restricted to a maximum of ten (10) active reminders. Natural Language Processing (NLP) email reminder extraction is subject to standard processing speed.</li>
+                                        <li><strong>Fully Assisted (Premium Tier):</strong> Billed annually at ₹649/year (calculated monthly at ₹54/month). Subscribers receive unlimited active reminders, priority NLP contextual parsing, active AI chatbot channels, Google Calendar synchronizations, and direct alerts sent on WhatsApp.</li>
+                                    </ul>
+                                    
+                                    <h6 class="fw-bold text-white mt-3">2. Account Activity & Suspension</h6>
+                                    <p>We log security data including registration metadata, user email configurations, and the customer's last login IP address. The system logs user activity logs to detect loopback violations. The administration reserves the right to suspend or suspend user accounts temporarily or permanently for violations of scheduled email request protocols.</p>
+                                    
+                                    <h6 class="fw-bold text-white mt-3">3. Billing, Downgrades, & Cancellation</h6>
+                                    <p>Premium memberships are billed on a recurring annual schedule of ₹649. Downgrading manually from the Fully Assisted plan back to Self Managed will take effect immediately. Access limits of 10 active reminders will enforce restrictions upon downgrading. Past payments are non-refundable.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Policy -->
+                        <div class="accordion-item border rounded bg-transparent border-secondary">
+                            <h2 class="accordion-header" id="landingHeadingPrivacy">
+                                <button class="accordion-button collapsed fw-bold text-white font-heading bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#landingCollapsePrivacy" aria-expanded="false" aria-controls="landingCollapsePrivacy" style="outline: none; box-shadow: none;">
+                                    <i class="bi bi-eye-slash me-2 text-success"></i>Privacy Policy
+                                </button>
+                            </h2>
+                            <div id="landingCollapsePrivacy" class="accordion-collapse collapse" aria-labelledby="landingHeadingPrivacy" data-bs-parent="#landingLegalAccordion">
+                                <div class="accordion-body text-light small" style="font-size: 13px; line-height: 1.6; opacity: 0.85;">
+                                    <p class="fw-bold text-white">Last Updated: July 2026</p>
+                                    <p>Recallify is committed to preserving the privacy of our scheduling users. This privacy policy describes the scope of metadata collected, logged, and parsed on the Recallify servers.</p>
+                                    
+                                    <h6 class="fw-bold text-white mt-3">1. Information We Collect</h6>
+                                    <ul>
+                                        <li><strong>Identity Data:</strong> Username, profile phone numbers, registered email addresses, and date joined metadata.</li>
+                                        <li><strong>Device Log Data:</strong> We automatically record security access logging details including your last login IP address.</li>
+                                        <li><strong>Activity Data:</strong> We monitor your connection activity status (active online indicator dot) by logging your last active request datetime stamp to power the real-time idle page updates.</li>
+                                        <li><strong>Inbound Email Content:</strong> Inbound emails forwarded to our integration inbox are parsed using natural language models to extract event names, times, location forecasts, and checklist details. Raw email bodies are kept strictly inside private user tables and are not shared.</li>
+                                    </ul>
+
+                                    <h6 class="fw-bold text-white mt-3">2. Processing & NLP Models</h6>
+                                    <p>Your emails are processed locally using zero-leak contextual parsing pipelines. Our weather forecasting seed algorithms are deterministic and do not share your coordinates or location logs with public weather networks.</p>
+                                    
+                                    <h6 class="fw-bold text-white mt-3">3. Security & Admin Oversight</h6>
+                                    <p>Registered administrators have access to user profile directory logs to upgrade plans or disable abusive accounts. Card details processed through the secure checkout portal are fully tokenized and stored only in masked format (e.g. Visa ending in 4111).</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -469,6 +650,6 @@
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
-    <script src="{% static 'js/main.js' %}?v=1.9"></script>
+    <script src="{% static 'js/main.js' %}?v=2.4"></script>
 </body>
 </html>

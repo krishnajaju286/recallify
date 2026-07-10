@@ -677,7 +677,7 @@ h1, h2, h3, h4, h5, h6 {
 :root[data-theme="dark"] .text-secondary,
 :root[data-theme="dark"] .text-muted-custom,
 :root[data-theme="dark"] p,
-:root[data-theme="dark"] span:not(.badge),
+:root[data-theme="dark"] span:not(.badge):not(.badge-pill):not([class*="badge-"]),
 :root[data-theme="dark"] small,
 :root[data-theme="dark"] .form-text {
     color: #cbd5e1 !important; /* Slate 300 - extremely legible against dark slate background */
@@ -700,5 +700,111 @@ h1, h2, h3, h4, h5, h6 {
 
 :root[data-theme="dark"] a:not(.btn):not(.user-toggle-link):not(.sidebar-brand):not(.nav-link):not(.dropdown-item) {
     color: #34d399 !important; /* Emerald green link for better contrast */
+}
+
+:root[data-theme="dark"] .list-group-item {
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+    color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .list-group-item *:not(.text-success):not(.text-danger):not([class*="bg-"]):not([class*="badge-"]):not(.badge) {
+    color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .list-group-item h1,
+:root[data-theme="dark"] .list-group-item h2,
+:root[data-theme="dark"] .list-group-item h3,
+:root[data-theme="dark"] .list-group-item h4,
+:root[data-theme="dark"] .list-group-item h5,
+:root[data-theme="dark"] .list-group-item h6,
+:root[data-theme="dark"] .list-group-item strong,
+:root[data-theme="dark"] .list-group-item .fw-bold {
+    color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .badge-confirmed,
+:root[data-theme="dark"] .badge-pill.badge-confirmed {
+    background-color: #065f46 !important;
+    color: #34d399 !important;
+}
+
+:root[data-theme="dark"] .badge-upcoming,
+:root[data-theme="dark"] .badge-pill.badge-upcoming {
+    background-color: #78350f !important;
+    color: #fbbf24 !important;
+}
+
+:root[data-theme="dark"] .badge-sent,
+:root[data-theme="dark"] .badge-pill.badge-sent {
+    background-color: #1e3a8a !important;
+    color: #60a5fa !important;
+}
+
+:root[data-theme="dark"] .badge-failed,
+:root[data-theme="dark"] .badge-pill.badge-failed {
+    background-color: #7f1d1d !important;
+    color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .bg-warning,
+:root[data-theme="dark"] button.bg-warning,
+:root[data-theme="dark"] .modal-header.bg-warning {
+    background-color: #f59e0b !important; /* amber 500 */
+    color: #0f172a !important; /* dark text */
+}
+
+:root[data-theme="dark"] .bg-warning *,
+:root[data-theme="dark"] button.bg-warning *,
+:root[data-theme="dark"] .modal-header.bg-warning * {
+    color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .bg-success-subtle,
+:root[data-theme="dark"] .badge.bg-success-subtle {
+    background-color: #065f46 !important;
+    color: #34d399 !important;
+}
+
+:root[data-theme="dark"] .bg-danger-subtle,
+:root[data-theme="dark"] .badge.bg-danger-subtle {
+    background-color: #7f1d1d !important;
+    color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .text-success {
+    color: #34d399 !important;
+}
+
+:root[data-theme="dark"] .text-danger {
+    color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .bg-light,
+:root[data-theme="dark"] .bg-light * {
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+
+/* Card overrides for dark mode */
+:root[data-theme="dark"] .card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+/* Auth wrapper dark mode background override */
+:root[data-theme="dark"] .auth-wrapper {
+    background: radial-gradient(circle at top left, #0f172a, #020617) !important;
+}
+
+/* Table hover override */
+:root[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .dark-mode-text-white {
+    color: #ffffff !important;
 }
 
