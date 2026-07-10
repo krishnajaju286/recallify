@@ -753,87 +753,105 @@
     color: #94a3b8;
     background-image: var(--mesh-gradient);
 }
-[data-theme="dark"] .landing-navbar {
+:root[data-theme="dark"] .landing-navbar {
     background: rgba(11, 15, 25, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-[data-theme="dark"] .navbar-brand-custom {
+:root[data-theme="dark"] .navbar-brand-custom {
     color: #ffffff !important;
 }
-[data-theme="dark"] .nav-link-custom {
+:root[data-theme="dark"] .nav-link-custom {
     color: #cbd5e1 !important;
 }
-[data-theme="dark"] .nav-link-custom:hover {
+:root[data-theme="dark"] .nav-link-custom:hover {
     color: var(--landing-primary) !important;
 }
-[data-theme="dark"] .hero-title {
+:root[data-theme="dark"] .hero-title {
     color: #ffffff;
 }
-[data-theme="dark"] .hero-subtitle {
-    color: #94a3b8;
+:root[data-theme="dark"] .hero-subtitle {
+    color: #cbd5e1;
 }
-[data-theme="dark"] .btn-hero-secondary {
+:root[data-theme="dark"] .btn-hero-secondary {
     background-color: #1e293b;
     border-color: #334155;
     color: #f8fafc !important;
 }
-[data-theme="dark"] .btn-hero-secondary:hover {
+:root[data-theme="dark"] .btn-hero-secondary:hover {
     background-color: #334155;
 }
-[data-theme="dark"] .stack-card {
+:root[data-theme="dark"] .stack-card {
     background: rgba(30, 41, 59, 0.95);
     border-color: rgba(255, 255, 255, 0.05);
 }
-[data-theme="dark"] .stack-card h5 {
+:root[data-theme="dark"] .stack-card h5 {
     color: #ffffff !important;
 }
-[data-theme="dark"] .about-section {
+:root[data-theme="dark"] .about-section {
     background-color: #0f172a;
     border-top-color: rgba(255, 255, 255, 0.03);
     border-bottom-color: rgba(255, 255, 255, 0.03);
 }
-[data-theme="dark"] .about-item-text h4 {
+:root[data-theme="dark"] .about-item-text h4 {
     color: #ffffff;
 }
-[data-theme="dark"] .feature-card {
+:root[data-theme="dark"] .about-item-text p {
+    color: #cbd5e1 !important;
+}
+:root[data-theme="dark"] .feature-card {
     background-color: #1e293b;
     border-color: rgba(255, 255, 255, 0.05);
 }
-[data-theme="dark"] .feature-card h4 {
+:root[data-theme="dark"] .feature-card h4 {
     color: #ffffff;
 }
-[data-theme="dark"] .btn-header-outline {
+:root[data-theme="dark"] .feature-card p {
+    color: #cbd5e1 !important;
+}
+:root[data-theme="dark"] .btn-header-outline {
     color: var(--landing-primary) !important;
 }
-[data-theme="dark"] .btn-header-outline:hover {
+:root[data-theme="dark"] .btn-header-outline:hover {
     background-color: rgba(16, 185, 129, 0.1);
 }
-[data-theme="dark"] .pricing-section .feature-card {
+:root[data-theme="dark"] .pricing-section .feature-card {
     background-color: #1e293b;
     border-color: rgba(255, 255, 255, 0.05);
 }
-[data-theme="dark"] .pricing-section .feature-card h2,
-[data-theme="dark"] .pricing-section .feature-card h4 {
+:root[data-theme="dark"] .pricing-section .feature-card h2,
+:root[data-theme="dark"] .pricing-section .feature-card h4 {
     color: #ffffff !important;
 }
-[data-theme="dark"] .pricing-section .border-success {
+:root[data-theme="dark"] .pricing-section .border-success {
     border-color: var(--landing-primary) !important;
 }
-[data-theme="dark"] .section-title {
+:root[data-theme="dark"] .section-title {
     color: #ffffff;
 }
-[data-theme="dark"] .social-icon-btn {
+:root[data-theme="dark"] .social-icon-btn {
     background-color: rgba(255, 255, 255, 0.02);
     border-color: rgba(255, 255, 255, 0.05);
 }
-[data-theme="dark"] .social-icon-btn:hover {
+:root[data-theme="dark"] .social-icon-btn:hover {
     background-color: var(--landing-primary);
 }
-[data-theme="dark"] .modal-content {
+:root[data-theme="dark"] .modal-content {
     background-color: #1e293b;
     color: #ffffff;
 }
-[data-theme="dark"] #themeToggle {
+:root[data-theme="dark"] #themeToggle {
     color: #ffffff !important;
+}
+:root[data-theme="dark"] .footer-description {
+    color: #cbd5e1 !important;
+}
+:root[data-theme="dark"] .footer-links-list a {
+    color: #cbd5e1 !important;
+}
+:root[data-theme="dark"] .footer-links-list a:hover {
+    color: var(--landing-primary) !important;
+}
+:root[data-theme="dark"] .footer-copyright {
+    color: #94a3b8 !important;
 }
 
