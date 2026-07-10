@@ -31,4 +31,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // 3. Theme Toggle Switcher
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        // Initialize icon on load
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        updateThemeIcon(themeToggle, currentTheme);
+        
+        themeToggle.addEventListener('click', function() {
+            const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = activeTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(themeToggle, newTheme);
+        });
+    }
+    
+    function updateThemeIcon(btn, theme) {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            if (theme === 'dark') {
+                icon.className = 'bi bi-sun';
+            } else {
+                icon.className = 'bi bi-moon-stars';
+            }
+        }
+    }
 });

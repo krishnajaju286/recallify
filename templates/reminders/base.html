@@ -11,6 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 </head>
 <body>
 
@@ -77,6 +83,11 @@
                 </div>
                 
                 <div class="header-actions">
+                    <!-- Theme Switcher Button -->
+                    <button class="btn-icon" id="themeToggle" title="Toggle Light/Dark Mode">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                    
                     <!-- Notification Bell -->
                     <button class="btn-icon">
                         <i class="bi bi-bell"></i>

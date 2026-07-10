@@ -741,3 +741,97 @@
         width: max-content;
     }
 }
+
+/* --- Dark Theme Landing Page Overrides --- */
+[data-theme="dark"] .landing-body {
+    background-color: #0b0f19;
+    color: #94a3b8;
+    --mesh-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                    radial-gradient(at 50% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+    background-image: var(--mesh-gradient);
+}
+[data-theme="dark"] .landing-navbar {
+    background: rgba(11, 15, 25, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .navbar-brand-custom {
+    color: #ffffff !important;
+}
+[data-theme="dark"] .nav-link-custom {
+    color: #cbd5e1 !important;
+}
+[data-theme="dark"] .nav-link-custom:hover {
+    color: var(--landing-primary) !important;
+}
+[data-theme="dark"] .hero-title {
+    color: #ffffff;
+}
+[data-theme="dark"] .hero-subtitle {
+    color: #94a3b8;
+}
+[data-theme="dark"] .btn-hero-secondary {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc !important;
+}
+[data-theme="dark"] .btn-hero-secondary:hover {
+    background-color: #334155;
+}
+[data-theme="dark"] .stack-card {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .stack-card h5 {
+    color: #ffffff !important;
+}
+[data-theme="dark"] .about-section {
+    background-color: #0f172a;
+    border-top-color: rgba(255, 255, 255, 0.03);
+    border-bottom-color: rgba(255, 255, 255, 0.03);
+}
+[data-theme="dark"] .about-item-text h4 {
+    color: #ffffff;
+}
+[data-theme="dark"] .feature-card {
+    background-color: #1e293b;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .feature-card h4 {
+    color: #ffffff;
+}
+[data-theme="dark"] .btn-header-outline {
+    color: var(--landing-primary) !important;
+}
+[data-theme="dark"] .btn-header-outline:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+[data-theme="dark"] .pricing-section .feature-card {
+    background-color: #1e293b;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .pricing-section .feature-card h2,
+[data-theme="dark"] .pricing-section .feature-card h4 {
+    color: #ffffff !important;
+}
+[data-theme="dark"] .pricing-section .border-success {
+    border-color: var(--landing-primary) !important;
+}
+[data-theme="dark"] .section-title {
+    color: #ffffff;
+}
+[data-theme="dark"] .social-icon-btn {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .social-icon-btn:hover {
+    background-color: var(--landing-primary);
+}
+[data-theme="dark"] .modal-content {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+[data-theme="dark"] #themeToggle {
+    color: #ffffff !important;
+}
+
