@@ -32,7 +32,17 @@ class Command(BaseCommand):
                                 f"Sending real email notification to {recipient} for '{reminder.title}'"
                             ))
                             
-                            scheduled_time_str = reminder.scheduled_time.strftime('%Y-%m-%d %I:%M %p')
+                            # Convert to user's preferred timezone for display
+                            from zoneinfo import ZoneInfo
+                            user_tz_name = getattr(user, 'profile', None)
+                            user_tz = ZoneInfo('Asia/Kolkata')  # default
+                            if user_tz_name and hasattr(user_tz_name, 'timezone') and user_tz_name.timezone:
+                                try:
+                                    user_tz = ZoneInfo(user_tz_name.timezone)
+                                except Exception:
+                                    pass
+                            local_time = reminder.scheduled_time.astimezone(user_tz)
+                            scheduled_time_str = local_time.strftime('%Y-%m-%d %I:%M %p')
                             description_text = reminder.description or 'No description provided.'
                             description_html = description_text.replace('\n', '<br>')
 

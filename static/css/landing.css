@@ -855,3 +855,157 @@
     color: #94a3b8 !important;
 }
 
+/* ========================================
+   SCROLL REVEAL ANIMATIONS
+======================================== */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered children animation for feature cards */
+.reveal-on-scroll.revealed .feature-card,
+.reveal-on-scroll.revealed .about-item,
+.reveal-on-scroll.revealed .vision-card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: stagger-in 0.6s ease forwards;
+}
+.reveal-on-scroll.revealed .feature-card:nth-child(1),
+.reveal-on-scroll.revealed .about-item:nth-child(1),
+.reveal-on-scroll.revealed .vision-card:nth-child(1) { animation-delay: 0.1s; }
+.reveal-on-scroll.revealed .feature-card:nth-child(2),
+.reveal-on-scroll.revealed .about-item:nth-child(2),
+.reveal-on-scroll.revealed .vision-card:nth-child(2) { animation-delay: 0.2s; }
+.reveal-on-scroll.revealed .feature-card:nth-child(3),
+.reveal-on-scroll.revealed .about-item:nth-child(3),
+.reveal-on-scroll.revealed .vision-card:nth-child(3) { animation-delay: 0.3s; }
+.reveal-on-scroll.revealed .feature-card:nth-child(4) { animation-delay: 0.4s; }
+.reveal-on-scroll.revealed .feature-card:nth-child(5) { animation-delay: 0.5s; }
+.reveal-on-scroll.revealed .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes stagger-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   SCROLL GRADIENT BODY TRANSITION
+======================================== */
+.landing-body {
+    transition: background 0.6s ease;
+}
+.landing-body.scroll-phase-1 {
+    background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                       radial-gradient(at 50% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
+                       radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+}
+.landing-body.scroll-phase-2 {
+    background-image: radial-gradient(at 20% 50%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 80% 30%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 50% 80%, rgba(139, 92, 246, 0.06) 0px, transparent 50%);
+}
+.landing-body.scroll-phase-3 {
+    background-image: radial-gradient(at 70% 60%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
+                       radial-gradient(at 20% 80%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                       radial-gradient(at 90% 20%, rgba(244, 63, 94, 0.06) 0px, transparent 50%);
+}
+.landing-body.scroll-phase-4 {
+    background-image: radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+                       radial-gradient(at 0% 50%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
+                       radial-gradient(at 100% 50%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+}
+
+/* ========================================
+   BUTTON MICRO-ANIMATIONS
+======================================== */
+.btn-hero-primary,
+.btn-hero-secondary,
+.btn-header-cta,
+.btn-header-outline,
+.btn-cta-green,
+.btn-outline-success,
+.btn-success {
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.btn-hero-primary:hover,
+.btn-header-cta:hover,
+.btn-cta-green:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+}
+.btn-hero-secondary:hover,
+.btn-header-outline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.btn-hero-primary:active,
+.btn-header-cta:active,
+.btn-cta-green:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Feature card hover micro-animation */
+.feature-card {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.4s ease !important;
+}
+.feature-card:hover {
+    transform: translateY(-6px) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Nav link active state indicator */
+.nav-link-custom.active-link {
+    color: var(--landing-primary) !important;
+}
+.nav-link-custom.active-link::after {
+    transform: scaleX(1);
+}
+
+/* ========================================
+   NAVBAR SCROLL EFFECTS
+======================================== */
+.landing-navbar.scrolled {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================
+   DEMO PLAYER ANIMATIONS
+======================================== */
+.demo-slide {
+    animation: fadeSlideIn 0.5s ease forwards;
+}
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scan {
+    0%   { top: 0; opacity: 1; }
+    50%  { opacity: 0.6; }
+    100% { top: 100%; opacity: 0; }
+}
+.animate-pulse {
+    animation: pulse-glow 1.8s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+}
+
+/* ========================================
+   SMOOTH SCROLL BEHAVIOR
+======================================== */
+html {
+    scroll-behavior: smooth;
+}
