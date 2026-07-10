@@ -106,43 +106,6 @@
                             <i class="bi bi-exclamation-circle me-1"></i>Pending Confirmation
                         </button>
                         <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Cancel</a>
-
-                        <!-- Modal for Confirming/Editing Pending Reminder -->
-                        <div class="modal fade" id="confirmReminderModal-{{ reminder.id }}" tabindex="-1" aria-labelledby="confirmReminderModalLabel-{{ reminder.id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
-                                    <div class="modal-header bg-warning text-dark py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
-                                        <h5 class="modal-title font-heading fw-bold" id="confirmReminderModalLabel-{{ reminder.id }}">
-                                            <i class="bi bi-question-circle-fill me-2"></i>Confirm Pending Reminder
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="{% url 'confirm_pending_reminder' reminder.id %}" method="POST">
-                                        {% csrf_token %}
-                                        <div class="modal-body p-4 text-start">
-                                            <p class="text-muted small mb-4">You can modify the name, date, and time of the reminder before confirming it.</p>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Reminder Name</label>
-                                                <input type="text" name="title" class="form-control" value="{{ reminder.title }}" required placeholder="e.g. Dentist Appointment">
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Scheduled Date & Time</label>
-                                                <input type="datetime-local" name="scheduled_time" class="form-control" value="{{ reminder.scheduled_time|date:'Y-m-d\TH:i' }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer border-0 pt-0">
-                                            <button type="button" class="btn btn-secondary px-3 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
-                                            <button type="submit" name="action" value="save" class="btn btn-outline-warning text-dark px-3 py-2" style="border-radius: 8px;">Save Edits Only</button>
-                                            <button type="submit" name="action" value="confirm" class="btn btn-success px-4 py-2" style="border-radius: 8px;">
-                                                <i class="bi bi-check-circle me-1"></i>Confirm & Schedule
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     {% else %}
                         <a href="{% url 'edit_reminder' reminder.id %}" class="action-link-edit"><i class="bi bi-pencil-square"></i> Edit</a>
                         <a href="{% url 'delete_reminder' reminder.id %}" class="action-link-delete"><i class="bi bi-trash"></i> Delete</a>
@@ -273,5 +236,48 @@
         </div>
     </div>
 </div>
+{% endif %}
+
+<!-- Modals for Confirming/Editing Pending Reminders (Rendered at Body Root to Avoid flex/column jitter layout bugs) -->
+{% if reminders %}
+    {% for reminder in reminders %}
+        {% if reminder.status == 'pending' %}
+            <div class="modal fade" id="confirmReminderModal-{{ reminder.id }}" tabindex="-1" aria-labelledby="confirmReminderModalLabel-{{ reminder.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+                        <div class="modal-header bg-warning text-dark py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                            <h5 class="modal-title font-heading fw-bold" id="confirmReminderModalLabel-{{ reminder.id }}">
+                                <i class="bi bi-question-circle-fill me-2"></i>Confirm Pending Reminder
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{% url 'confirm_pending_reminder' reminder.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-body p-4 text-start">
+                                <p class="text-muted small mb-4">You can modify the name, date, and time of the reminder before confirming it.</p>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Reminder Name</label>
+                                    <input type="text" name="title" class="form-control" value="{{ reminder.title }}" required placeholder="e.g. Dentist Appointment">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Scheduled Date & Time</label>
+                                    <input type="datetime-local" name="scheduled_time" class="form-control" value="{{ reminder.scheduled_time|date:'Y-m-d\TH:i' }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 pt-0">
+                                <button type="button" class="btn btn-secondary px-3 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Cancel</button>
+                                <button type="submit" name="action" value="save" class="btn btn-outline-warning text-dark px-3 py-2" style="border-radius: 8px;">Save Edits Only</button>
+                                <button type="submit" name="action" value="confirm" class="btn btn-success px-4 py-2" style="border-radius: 8px;">
+                                    <i class="bi bi-check-circle me-1"></i>Confirm & Schedule
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
 {% endif %}
 {% endblock %}
