@@ -1,6 +1,8 @@
 import time
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 from reminders.models import Reminder, ActivityLog
 
 class Command(BaseCommand):
@@ -12,6 +14,7 @@ class Command(BaseCommand):
         while True:
             try:
                 now = timezone.now()
+                # Fetch pending/upcoming/confirmed reminders that are due
                 due_reminders = Reminder.objects.filter(
                     scheduled_time__lte=now,
                     status__in=['pending', 'upcoming', 'confirmed']
@@ -21,20 +24,43 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"Found {due_reminders.count()} due reminders at {now}"))
                     
                     for reminder in due_reminders:
-                        # 1. Trigger Notification Simulation
-                        self.stdout.write(self.style.SUCCESS(
-                            f"[NOTIFICATION SENT] User: {reminder.user.username} | Title: {reminder.title} | Time: {reminder.scheduled_time}"
-                        ))
+                        user = reminder.user
+                        recipient = user.email
                         
-                        # 2. Update status to 'sent'
+                        if recipient:
+                            self.stdout.write(self.style.SUCCESS(
+                                f"Sending real email notification to {recipient} for '{reminder.title}'"
+                            ))
+                            
+                            # Send real email notification via SMTP
+                            send_mail(
+                                subject=f"Reminder: {reminder.title}",
+                                message=(
+                                    f"Hello {user.username},\n\n"
+                                    f"This is a scheduled reminder from Recallify:\n\n"
+                                    f"Event: {reminder.title}\n"
+                                    f"Scheduled Time: {reminder.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}\n"
+                                    f"Description: {reminder.description or 'No description provided.'}\n\n"
+                                    f"Best regards,\nRecallify Automated Scheduler"
+                                ),
+                                from_email=settings.EMAIL_HOST_USER,
+                                recipient_list=[recipient],
+                                fail_silently=False
+                            )
+                        else:
+                            self.stdout.write(self.style.ERROR(
+                                f"User {user.username} has no email registered. Skipping SMTP mail."
+                            ))
+                        
+                        # Update status to 'sent'
                         reminder.status = 'sent'
                         reminder.save()
                         
-                        # 3. Create ActivityLog entry
+                        # Create ActivityLog entry
                         ActivityLog.objects.create(
-                            user=reminder.user,
+                            user=user,
                             action_type='Reminder Notification Sent',
-                            details=f"Notification dispatched for reminder: '{reminder.title}' scheduled for {reminder.scheduled_time}."
+                            details=f"Real email notification dispatched for reminder: '{reminder.title}' scheduled for {reminder.scheduled_time}."
                         )
                 
                 # Check for due reminders every 10 seconds
