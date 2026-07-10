@@ -117,16 +117,9 @@
         <div class="text-center py-5">
             <div class="text-muted mb-3"><i class="bi bi-calendar-x" style="font-size: 3rem;"></i></div>
             <h5 class="fw-bold">No active reminders</h5>
-            <p class="text-muted">Create a reminder using the button above or simulate sending an email below.</p>
+            <p class="text-muted">Create a reminder using the button above.</p>
         </div>
     {% endif %}
-
-    <!-- Create via Email CTA Button (matching reference layout) -->
-    <div class="text-center mt-4">
-        <a href="{% url 'email_simulator' %}" class="btn-blue-custom d-inline-block">
-            <i class="bi bi-envelope-paper me-2"></i>Create New Reminder via Email
-        </a>
-    </div>
 </div>
 
 {% if request.user.is_superuser %}
