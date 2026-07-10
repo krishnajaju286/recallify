@@ -128,6 +128,7 @@ def extract_event_title(text):
     cleaned = re.sub(r'\b\d{1,2}[-/]\d{1,2}[-/]\d{4}\b', '', cleaned)
     cleaned = re.sub(r'\b\d{1,2}:\d{2}\s*(?:am|pm)?\b', '', cleaned)
     cleaned = re.sub(r'\b\d{1,2}\s*(?:am|pm)\b', '', cleaned)
+    cleaned = re.sub(r'\b(?:at|around|@|by)\s*\d{1,2}(?::\d{2})?\b', '', cleaned)
     
     # 2. Remove relative date keywords
     to_remove = [
@@ -291,7 +292,12 @@ def parse_email_reminder(subject, body):
                     target_time = datetime.time(hour, minute)
     
     # Try relative date indicators
-    date_keywords = ["next weekend", "this weekend", "weekend", "tomorrow", "today", "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday"]
+    date_keywords = [
+        "next weekend", "this weekend", "weekend", "tomorrow", "today",
+        "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday",
+        "on monday", "on tuesday", "on wednesday", "on thursday", "on friday", "on saturday", "on sunday",
+        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    ]
     found_keyword = None
     for kw in date_keywords:
         if kw in combined_text:
