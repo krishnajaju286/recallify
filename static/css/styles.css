@@ -507,7 +507,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --- Dark Theme Variables & Component Overrides --- */
-[data-theme="dark"] {
+:root[data-theme="dark"] {
     --bg-light: #0f172a; /* Slate 900 */
     --card-bg: #1e293b; /* Slate 800 */
     --text-main: #f8fafc; /* Slate 50 */

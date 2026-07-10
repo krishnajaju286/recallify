@@ -743,12 +743,14 @@
 }
 
 /* --- Dark Theme Landing Page Overrides --- */
-[data-theme="dark"] .landing-body {
-    background-color: #0b0f19;
-    color: #94a3b8;
+:root[data-theme="dark"] {
     --mesh-gradient: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
                     radial-gradient(at 50% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
                     radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+}
+[data-theme="dark"] .landing-body {
+    background-color: #0b0f19;
+    color: #94a3b8;
     background-image: var(--mesh-gradient);
 }
 [data-theme="dark"] .landing-navbar {
