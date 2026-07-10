@@ -167,6 +167,56 @@ def extract_event_title(text):
         return cleaned[0].upper() + cleaned[1:]
     return ""
 
+def predict_ampm_by_context(hour, text):
+    text = text.lower()
+    
+    # 1. Birthday / Anniversary celebrations
+    if "birthday" in text or "anniversary" in text or "bday" in text:
+        if hour == 12:
+            return 'AM'  # 12:00 AM Midnight birthday wishes/celebration
+        elif 7 <= hour <= 11:
+            return 'AM'  # Morning wishes
+        else:
+            return 'PM'
+            
+    # 2. Morning activities (Gym, Workout, Wake up, Breakfast, Sunrise, Jogging, Run)
+    morning_keywords = ["wake up", "wakeup", "breakfast", "gym", "workout", "jogging", "jog", "morning", "sunrise", "run", "coffee"]
+    if any(kw in text for kw in morning_keywords):
+        if 4 <= hour <= 11:
+            return 'AM'
+        elif hour == 12:
+            return 'PM'  # Noon
+        else:
+            return 'AM'
+            
+    # 3. Mid-day/Lunch activities (Lunch, Noon, Brunch, Standup, Meeting, Office, Class, Work, Call, Exam, Interview)
+    afternoon_keywords = ["lunch", "brunch", "noon", "afternoon", "meeting", "standup", "class", "office", "work", "call", "exam", "interview"]
+    if any(kw in text for kw in afternoon_keywords):
+        if hour == 12:
+            return 'PM'  # Noon
+        elif 1 <= hour <= 6:
+            return 'PM'  # Afternoon
+        elif 8 <= hour <= 11:
+            return 'AM'  # Morning meetings
+            
+    # 4. Evening/Night activities (Dinner, Supper, Party, Sleep, Bedtime, Night, Sunset, Movie, Drinks, Club)
+    evening_keywords = ["dinner", "supper", "party", "sleep", "bedtime", "night", "sunset", "movie", "drinks", "bar", "club"]
+    if any(kw in text for kw in evening_keywords):
+        if hour == 12:
+            return 'AM'  # Midnight
+        elif 1 <= hour <= 4:
+            return 'AM'  # Late night
+        elif 5 <= hour <= 11:
+            return 'PM'  # Evening
+            
+    # Default fallbacks based on raw hour range if no keywords match:
+    if 7 <= hour <= 11:
+        return 'AM'  # Morning
+    elif hour == 12 or 1 <= hour <= 6:
+        return 'PM'  # Afternoon
+    else:
+        return 'PM'  # Night
+
 def parse_email_reminder(subject, body):
     """
     Main parsing function. Takes subject and body, and returns a dictionary with:
@@ -203,9 +253,42 @@ def parse_email_reminder(subject, body):
     target_time = None
     
     # Try finding time first
-    time_matches = re.findall(r'(\d{1,2}:\d{2}\s*(?:am|pm)?|\d{1,2}\s*(?:am|pm))', combined_text)
-    if time_matches:
-        target_time = parse_time(time_matches[0])
+    # A. Look for explicit time with AM/PM (e.g. 10:30 PM, 9 AM)
+    time_ampm_match = re.search(r'\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b', combined_text)
+    if time_ampm_match:
+        hour = int(time_ampm_match.group(1))
+        minute = int(time_ampm_match.group(2) or 0)
+        ampm = time_ampm_match.group(3).upper()
+        
+        if ampm == 'PM' and hour < 12:
+            hour += 12
+        elif ampm == 'AM' and hour == 12:
+            hour = 0
+        target_time = datetime.time(hour, minute)
+    else:
+        # B. Look for strictly 24-hour style format (e.g. 15:30, 04:00)
+        time_24_match = re.search(r'\b(\d{2}):(\d{2})\b', combined_text)
+        if time_24_match:
+            hour = int(time_24_match.group(1))
+            minute = int(time_24_match.group(2))
+            if 0 <= hour <= 23 and 0 <= minute <= 59:
+                target_time = datetime.time(hour, minute)
+        
+        # C. Look for ambiguous hours/times with keyword context (e.g. "at 12", "at 8")
+        if not target_time:
+            ambiguous_match = re.search(r'\b(?:at|around|@|by)\s*(\d{1,2})(?::(\d{2}))?\b', combined_text)
+            if ambiguous_match:
+                hour = int(ambiguous_match.group(1))
+                minute = int(ambiguous_match.group(2) or 0)
+                if 1 <= hour <= 12:
+                    ampm = predict_ampm_by_context(hour, combined_text)
+                    if ampm == 'PM' and hour < 12:
+                        hour += 12
+                    elif ampm == 'AM' and hour == 12:
+                        hour = 0
+                    target_time = datetime.time(hour, minute)
+                elif 13 <= hour <= 23:
+                    target_time = datetime.time(hour, minute)
     
     # Try relative date indicators
     date_keywords = ["next weekend", "this weekend", "weekend", "tomorrow", "today", "next monday", "next tuesday", "next wednesday", "next thursday", "next friday", "next saturday", "next sunday"]
