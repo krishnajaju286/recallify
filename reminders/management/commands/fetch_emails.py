@@ -197,12 +197,10 @@ class Command(BaseCommand):
                 # 8. Regular email reminder parsing
                 # Check reminder limits for free users
                 profile = user.profile
-                if profile.subscription_tier == 'free':
-                    active_count = Reminder.objects.filter(user=user, status__in=['pending', 'upcoming', 'confirmed']).count()
-                    if active_count >= profile.reminder_limit:
-                        self.stdout.write(self.style.ERROR(f"User {user.username} has reached reminder limit (10). Rejecting email."))
-                        mail.store(mail_id, '+FLAGS', '\\Seen')
-                        continue
+                if profile.has_reached_limit():
+                    self.stdout.write(self.style.ERROR(f"User {user.username} has reached reminder limit (10). Rejecting email."))
+                    mail.store(mail_id, '+FLAGS', '\\Seen')
+                    continue
                 
                 parsed_data = parse_email_reminder(subject, body)
                 

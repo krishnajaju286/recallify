@@ -112,16 +112,20 @@ def signup_view(request):
             # Log user in
             login(request, user)
             
-            # Resolve default timezone by signup IP location
-            try:
-                profile = user.profile
-                ip = get_client_ip(request)
-                located_tz = get_timezone_from_ip(ip)
-                profile.timezone = located_tz
-                profile.last_login_ip = ip
-                profile.save()
-            except Exception:
-                pass
+            # Resolve default timezone by signup IP location in background
+            def resolve_tz(user_id, ip_address):
+                from django.contrib.auth.models import User
+                try:
+                    u = User.objects.get(id=user_id)
+                    located_tz = get_timezone_from_ip(ip_address)
+                    u.profile.timezone = located_tz
+                    u.profile.last_login_ip = ip_address
+                    u.profile.save()
+                except Exception:
+                    pass
+                    
+            import threading
+            threading.Thread(target=resolve_tz, args=(user.id, get_client_ip(request))).start()
                 
             messages.success(request, f"Welcome to Recallify, {user.username}!")
             # Log action
@@ -146,18 +150,23 @@ def login_view(request):
         if user is not None:
             login(request, user)
             
-            # Set default timezone if not already customized
-            profile = user.profile
-            try:
-                ip = get_client_ip(request)
-                profile.last_login_ip = ip
-                if profile.timezone == 'Asia/Kolkata':
-                    located_tz = get_timezone_from_ip(ip)
-                    if located_tz != profile.timezone:
-                        profile.timezone = located_tz
-                profile.save()
-            except Exception:
-                pass
+            # Set default timezone in background if not already customized
+            def resolve_tz_login(user_id, ip_address):
+                from django.contrib.auth.models import User
+                try:
+                    u = User.objects.get(id=user_id)
+                    p = u.profile
+                    p.last_login_ip = ip_address
+                    if p.timezone == 'Asia/Kolkata':
+                        located_tz = get_timezone_from_ip(ip_address)
+                        if located_tz != p.timezone:
+                            p.timezone = located_tz
+                    p.save()
+                except Exception:
+                    pass
+
+            import threading
+            threading.Thread(target=resolve_tz_login, args=(user.id, get_client_ip(request))).start()
                     
             messages.success(request, f"Welcome back, {user.username}!")
             ActivityLog.objects.create(
@@ -165,11 +174,7 @@ def login_view(request):
                 action_type='Login',
                 details=f"Logged in successfully. Resolved timezone: {profile.timezone}."
             )
-            try:
-                from django.core.management import call_command
-                call_command('fetch_emails')
-            except Exception as e:
-                print(f"Error fetching emails on login redirect: {e}")
+            # Fetch emails via background worker or cron in production, not on login.
             return redirect('dashboard')
         else:
             messages.error(request, "Invalid username or password.")
@@ -189,11 +194,7 @@ def logout_view(request):
 # Dashboard: List upcoming events and manage them
 @login_required
 def dashboard_view(request):
-    try:
-        from django.core.management import call_command
-        call_command('fetch_emails')
-    except Exception as e:
-        print(f"Error fetching emails on dashboard load: {e}")
+    # Fetch emails via background worker or cron in production, not on page load.
 
     query = request.GET.get('search', '')
     
@@ -285,11 +286,9 @@ def dashboard_view(request):
 def create_reminder(request):
     profile = request.user.profile
     # Check limit for free tier
-    if profile.subscription_tier == 'free':
-        active_count = Reminder.objects.filter(user=request.user, status__in=['pending', 'upcoming', 'confirmed']).count()
-        if active_count >= profile.reminder_limit:
-            messages.warning(request, "You have reached your Free Tier reminder limit (10). Upgrade to Premium for unlimited reminders!")
-            return redirect('subscription')
+    if profile.has_reached_limit():
+        messages.warning(request, "You have reached your Free Tier reminder limit (10). Upgrade to Premium for unlimited reminders!")
+        return redirect('subscription')
 
     if request.method == 'POST':
         form = ReminderForm(request.POST)
@@ -388,11 +387,9 @@ def email_sim_view(request):
         
         # 2. Regular reminder parsing
         # Check limit
-        if profile.subscription_tier == 'free':
-            active_count = Reminder.objects.filter(user=request.user, status__in=['pending', 'upcoming', 'confirmed']).count()
-            if active_count >= profile.reminder_limit:
-                messages.warning(request, "Limit reached! Upgrade to Premium to add more reminders.")
-                return redirect('subscription')
+        if profile.has_reached_limit():
+            messages.warning(request, "Limit reached! Upgrade to Premium to add more reminders.")
+            return redirect('subscription')
         
         # Parse simulated email
         parsed_data = parse_email_reminder(subject, body)

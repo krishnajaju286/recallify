@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pzt_2x+t2!ru0nk-x=%9m8-x@5yrm2a9!8#@lx6!upe==63(qs'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -150,12 +151,12 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'myrecallify@gmail.com'
-EMAIL_HOST_PASSWORD = 'alzeibpbfodezeas'
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # Email settings for IMAP (Receiving/Polling emails)
 IMAP_SERVER = 'imap.gmail.com'
 IMAP_PORT = 993
 IMAP_EMAIL = 'myrecallify@gmail.com'
-IMAP_PASSWORD = 'alzeibpbfodezeas'
+IMAP_PASSWORD = config('IMAP_PASSWORD')
 
 

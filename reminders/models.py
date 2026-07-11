@@ -29,6 +29,12 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s profile ({self.get_subscription_tier_display()})"
 
+    def has_reached_limit(self):
+        if self.subscription_tier == 'premium':
+            return False
+        active_count = self.user.reminders.filter(status__in=['pending', 'upcoming', 'confirmed']).count()
+        return active_count >= self.reminder_limit
+
 class Reminder(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

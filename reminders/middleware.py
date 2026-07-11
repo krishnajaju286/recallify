@@ -9,8 +9,11 @@ class TimezoneMiddleware:
         if request.user.is_authenticated:
             try:
                 profile = request.user.profile
-                profile.last_active_at = timezone.now()
-                profile.save(update_fields=['last_active_at'])
+                now = timezone.now()
+                # Throttle DB writes to once per 5 minutes
+                if not profile.last_active_at or (now - profile.last_active_at).total_seconds() > 300:
+                    profile.last_active_at = now
+                    profile.save(update_fields=['last_active_at'])
             except Exception:
                 pass
                 
